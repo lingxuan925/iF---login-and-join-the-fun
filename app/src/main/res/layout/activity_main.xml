@@ -23,12 +23,12 @@
         android:orientation="vertical"
         android:weightSum="100">
 
-        <FrameLayout
+        <com.example.lingxuan925.anif.MyViewPager
             android:id="@+id/fragment_frame"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="91">
-        </FrameLayout>
+        </com.example.lingxuan925.anif.MyViewPager>
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
