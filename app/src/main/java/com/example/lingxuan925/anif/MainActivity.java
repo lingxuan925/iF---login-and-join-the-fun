@@ -1,5 +1,6 @@
 package com.example.lingxuan925.anif;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,7 +12,6 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView mTextMessage;
     private Fragment fragment1, fragment2, fragment3;
     private Fragment[] fragments;
     private int lastFragment;
@@ -54,8 +54,7 @@ public class MainActivity extends AppCompatActivity {
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
-
-
+    
     private void initFragment() {
         fragment1 = new Events();
         fragment2 = new Friends();
@@ -71,5 +70,12 @@ public class MainActivity extends AppCompatActivity {
         if (!fragments[index].isAdded())
             transaction.add(R.id.fragment_frame, fragments[index]);
         transaction.show(fragments[index]).commitAllowingStateLoss();
+    }
+
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 }
