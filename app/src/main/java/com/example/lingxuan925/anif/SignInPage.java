@@ -1,18 +1,15 @@
 package com.example.lingxuan925.anif;
 
 import android.content.Intent;
-import android.graphics.drawable.shapes.Shape;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.view.View;
-import android.widget.ImageView;
 
 public class SignInPage extends AppCompatActivity {
 
     Intent nextIntent;
+    Intent signupWithGmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +17,7 @@ public class SignInPage extends AppCompatActivity {
         setContentView(R.layout.activity_signin_screen);
 
         nextIntent = new Intent(getApplicationContext(), MainActivity.class);
+        signupWithGmail = new Intent(getApplicationContext(), Signup.class);
 
         Button btnLogin = (Button) findViewById(R.id.login);
         Button btnSignUp = (Button) findViewById(R.id.signup);
@@ -28,6 +26,13 @@ public class SignInPage extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(nextIntent);
+            }
+        });
+
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(signupWithGmail);
             }
         });
     }
