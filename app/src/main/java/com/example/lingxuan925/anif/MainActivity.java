@@ -1,5 +1,6 @@
 package com.example.lingxuan925.anif;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -8,15 +9,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private TextView mTextMessage;
-    private MyViewPager viewPager;
+  
     private Fragment fragment1, fragment2, fragment3;
     private List<Fragment> fragments;
     private ViewPagerAdapter viewPagerAdapter;
@@ -48,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initFragment();
-        navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         viewPager = (MyViewPager)findViewById(R.id.fragment_frame);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -88,5 +86,12 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(fragment1);
         fragments.add(fragment2);
         fragments.add(fragment3);
+    }
+
+    public void onBackPressed() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 }

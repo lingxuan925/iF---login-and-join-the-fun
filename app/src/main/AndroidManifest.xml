@@ -10,16 +10,21 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SignInPage"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.signIn">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Signup"
+            android:label="@string/title_activity_gmail_signup"
+            android:theme="@style/AppTheme.signIn"></activity>
     </application>
 
 </manifest>

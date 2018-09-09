@@ -1,26 +1,35 @@
 package com.example.lingxuan925.anif;
 
-import android.content.Context;
-import android.graphics.Path;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
 
-public class User extends Fragment {
+public class User extends Fragment implements View.OnClickListener {
     private ArrayList<Option> optionList = new ArrayList<>();
+    private Button logoutBtn;
+    FirebaseAuth mAuth;
+    FirebaseAuth.AuthStateListener mAuthListener;
 
     public User() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,13 +43,25 @@ public class User extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
         OptionAdapter adapter = new OptionAdapter(view.getContext(), R.layout.option_item, optionList);
-        ListView listView = (ListView) view.findViewById(R.id.options_list);
+        ListView listView = view.findViewById(R.id.options_list);
         listView.setAdapter(adapter);
+        mAuth = FirebaseAuth.getInstance();
+        logoutBtn = view.findViewById(R.id.signout);
+        logoutBtn.setOnClickListener(this);
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null) {
+                    startActivity(new Intent(getActivity(), SignInPage.class));
+                }
+            }
+        };
         return view;
     }
 
     private void initOptions(){
-        Option option1 = new Option("Chang avatar", R.drawable.profile_icon);
+        Option option1 = new Option("Change avatar", R.drawable.profile_icon);
         optionList.add(option1);
         Option option2 = new Option("Change nickname", R.drawable.pencil_icon);
         optionList.add(option2);
@@ -54,4 +75,8 @@ public class User extends Fragment {
         optionList.add(option6);
     }
 
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.signout) mAuth.signOut();
+    }
 }
