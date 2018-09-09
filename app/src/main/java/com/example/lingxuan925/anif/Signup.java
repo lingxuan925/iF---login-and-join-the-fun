@@ -1,6 +1,7 @@
 package com.example.lingxuan925.anif;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -25,6 +25,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class Signup extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -32,8 +34,8 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
     FirebaseAuth mAuth;
     GoogleApiClient googleApiClient;
     private static final int REQ_CODE = 9001;
-    private TextView name;
     FirebaseAuth.AuthStateListener mAuthListener;
+    DatabaseReference databaseUsers;
 
     @Override
     protected void onStart() {
@@ -49,6 +51,8 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
+
         signIn = findViewById(R.id.signingmail);
         signIn.setOnClickListener(this);
 
@@ -63,15 +67,11 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
             }
         };
 
-        name = findViewById(R.id.user_name);
-
-        // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
-//        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         googleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
@@ -97,6 +97,10 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             firebaseAuthWithGoogle(account);
+
+            String id = databaseUsers.push().getKey();
+            AppUser aUser = new AppUser(account.getDisplayName());
+            databaseUsers.child(id).setValue(aUser);
         }
         else {
             Toast.makeText(Signup.this, "Authentication Error!", Toast.LENGTH_LONG).show();

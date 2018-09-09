@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -20,6 +21,7 @@ public class User extends Fragment implements View.OnClickListener {
     private Button logoutBtn;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
+    private TextView name;
 
     public User() {
         // Required empty public constructor
@@ -48,6 +50,8 @@ public class User extends Fragment implements View.OnClickListener {
         mAuth = FirebaseAuth.getInstance();
         logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
+
+        name = view.findViewById(R.id.user_name);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
