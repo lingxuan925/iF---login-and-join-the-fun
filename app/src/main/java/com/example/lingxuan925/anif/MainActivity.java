@@ -6,15 +6,20 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
 
+public class MainActivity extends AppCompatActivity {
+  
     private Fragment fragment1, fragment2, fragment3;
-    private Fragment[] fragments;
-    private int lastFragment;
+    private List<Fragment> fragments;
+    private ViewPagerAdapter viewPagerAdapter;
     private BottomNavigationView navigation;
+    private MenuItem menuItem;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -23,22 +28,13 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_events:
-                    if(lastFragment != 0){
-                        switchFragment(lastFragment,0);
-                        lastFragment = 0;
-                    }
+                    viewPager.setCurrentItem(0);
                     return true;
                 case R.id.navigation_friends:
-                    if(lastFragment != 1){
-                        switchFragment(lastFragment,1);
-                        lastFragment = 1;
-                    }
+                    viewPager.setCurrentItem(1);
                     return true;
                 case R.id.navigation_user:
-                    if(lastFragment != 2){
-                        switchFragment(lastFragment,2);
-                        lastFragment = 2;
-                    }
+                    viewPager.setCurrentItem(2);
                     return true;
             }
             return false;
@@ -52,6 +48,33 @@ public class MainActivity extends AppCompatActivity {
         initFragment();
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        viewPager = (MyViewPager)findViewById(R.id.fragment_frame);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                if (menuItem != null) {
+                    menuItem.setChecked(false);
+                } else {
+                    navigation.getMenu().getItem(0).setChecked(false);
+                }
+                menuItem = navigation.getMenu().getItem(i);
+                menuItem.setChecked(true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPagerAdapter.setList(fragments);
+        viewPager.setOffscreenPageLimit(3);
     }
 
 
@@ -59,17 +82,10 @@ public class MainActivity extends AppCompatActivity {
         fragment1 = new Events();
         fragment2 = new Friends();
         fragment3 = new User();
-        fragments = new Fragment[]{fragment1, fragment2, fragment3};
-        lastFragment = 0;
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_frame,fragment1).show(fragment1).commit();
-    }
-
-    private void switchFragment(int last, int index) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.hide(fragments[last]);
-        if (!fragments[index].isAdded())
-            transaction.add(R.id.fragment_frame, fragments[index]);
-        transaction.show(fragments[index]).commitAllowingStateLoss();
+        fragments = new ArrayList<>();
+        fragments.add(fragment1);
+        fragments.add(fragment2);
+        fragments.add(fragment3);
     }
 
     public void onBackPressed() {
