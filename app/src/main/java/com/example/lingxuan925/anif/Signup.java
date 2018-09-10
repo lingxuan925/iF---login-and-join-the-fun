@@ -25,8 +25,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class Signup extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -97,10 +100,24 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             firebaseAuthWithGoogle(account);
+            final String emailToCheck = account.getEmail();
+            final String userName = account.getDisplayName();
 
-            String id = databaseUsers.push().getKey();
-            AppUser aUser = new AppUser(account.getDisplayName());
-            databaseUsers.child(id).setValue(aUser);
+            databaseUsers.orderByChild("email").equalTo(emailToCheck).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()) {
+                        String id = databaseUsers.push().getKey();
+                        AppUser aUser = new AppUser(userName, emailToCheck);
+                        databaseUsers.child(id).setValue(aUser);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
         else {
             Toast.makeText(Signup.this, "Authentication Error!", Toast.LENGTH_LONG).show();
@@ -116,7 +133,6 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
