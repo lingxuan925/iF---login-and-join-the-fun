@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -72,7 +73,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         return view;
     }
 
-    private void initOptions(){
+    private void initOptions() {
         Option option1 = new Option("Change avatar", R.drawable.profile_icon);
         optionList.add(option1);
         Option option2 = new Option("Change nickname", R.drawable.pencil_icon);
@@ -94,6 +95,33 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+        String text = (String) ((TextView) view.findViewById(R.id.option_name)).getText();
+        switch (text) {
+            case "Change avatar":
+                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("change avatar is clicked");
+                break;
+            case "Change nickname":
+                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("change nickname is clicked");
+                break;
+            case "Upcoming events":
+                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Upcoming events is clicked");
+                break;
+            case "Details":
+                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Details is clicked");
+                break;
+            case "Settings":
+                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Settings is clicked");
+                break;
+            case "Feedback":
+                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Feedback is clicked");
+                break;
+        }
     }
 }
+
