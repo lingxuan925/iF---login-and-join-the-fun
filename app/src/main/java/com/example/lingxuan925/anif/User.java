@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -23,6 +24,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
     private TextView name;
+    private TextView user_email;
 
     public User() {
         // Required empty public constructor
@@ -50,10 +52,14 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         listView.setOnItemClickListener(this);
         listView.setAdapter(adapter);
         mAuth = FirebaseAuth.getInstance();
+        FirebaseUser current_user = mAuth.getCurrentUser();
         logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
 
         name = view.findViewById(R.id.user_name);
+        user_email = view.findViewById(R.id.user_id);
+        name.setText(current_user.getDisplayName());
+        user_email.setText(current_user.getEmail());
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
