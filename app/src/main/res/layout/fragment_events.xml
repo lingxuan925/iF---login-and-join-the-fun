@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="100"
+
     tools:context=".Events">
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5"
-        android:text="@string/hello_blank_fragment" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:backgroundTint="@color/green"
+        app:borderWidth="0dp"
+        app:fabSize="mini"
+        app:srcCompat="@android:drawable/ic_dialog_map" />
 
-    <FrameLayout
-        android:id="@+id/view_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="95">
+    <include layout="@layout/layout_map" />
 
-        <include layout="@layout/layout_map" />
-
-        <include layout="@layout/layout_list" />
-    </FrameLayout>
-
-</LinearLayout>
+    <include layout="@layout/layout_list" />
+</FrameLayout>

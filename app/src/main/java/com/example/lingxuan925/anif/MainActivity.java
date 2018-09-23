@@ -14,10 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-  
-    private Fragment fragment1, fragment2, fragment3;
+
     private List<Fragment> fragments;
-    private ViewPagerAdapter viewPagerAdapter;
     private BottomNavigationView navigation;
     private MenuItem menuItem;
     private ViewPager viewPager;
@@ -50,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
         navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         viewPager = (MyViewPager)findViewById(R.id.fragment_frame);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPagerAdapter.setList(fragments);
+        viewPager.setOffscreenPageLimit(3);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i1) {
@@ -58,13 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int i) {
-                if (menuItem != null) {
-                    menuItem.setChecked(false);
-                } else {
-                    navigation.getMenu().getItem(0).setChecked(false);
-                }
-                menuItem = navigation.getMenu().getItem(i);
-                menuItem.setChecked(true);
+
             }
 
             @Override
@@ -72,17 +68,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(viewPagerAdapter);
-        viewPagerAdapter.setList(fragments);
-        viewPager.setOffscreenPageLimit(3);
     }
 
 
     private void initFragment() {
-        fragment1 = new Events();
-        fragment2 = new Friends();
-        fragment3 = new User();
+        Fragment fragment1 = new Events();
+        Fragment fragment2 = new Friends();
+        Fragment fragment3 = new User();
         fragments = new ArrayList<>();
         fragments.add(fragment1);
         fragments.add(fragment2);

@@ -1,5 +1,6 @@
 package com.example.lingxuan925.anif;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -7,8 +8,6 @@ import android.view.MotionEvent;
 
 
 public class MyViewPager extends ViewPager {
-
-    int preX = 0;
 
     public MyViewPager(Context context) {
         super(context);
@@ -18,24 +17,25 @@ public class MyViewPager extends ViewPager {
         super(context, attrs);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void setCurrentItem(int item) {
-        super.setCurrentItem(item, false);
+    public boolean onTouchEvent(MotionEvent ev){
+        return true;
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
+    public boolean onInterceptTouchEvent(MotionEvent ev){
+        return false;
+    }
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            preX = (int) event.getX();
-        } else {
-            if (Math.abs((int) event.getX() - preX) > 10) {
-                return true;
-            } else {
-                preX = (int) event.getX();
-            }
-        }
-        return super.onInterceptTouchEvent(event);
+    @Override public boolean dispatchTouchEvent(MotionEvent ev) {
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public void setCurrentItem(int item) {
+        super.setCurrentItem(item, false);
+
     }
 
 }
