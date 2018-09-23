@@ -17,15 +17,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class User extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ArrayList<Option> optionList = new ArrayList<>();
-    private Button logoutBtn;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
-    private TextView name;
-    private TextView user_email;
 
     public User() {
         // Required empty public constructor
@@ -54,12 +52,12 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         listView.setAdapter(adapter);
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser current_user = mAuth.getCurrentUser();
-        logoutBtn = view.findViewById(R.id.signout);
+        Button logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
 
-        name = view.findViewById(R.id.user_name);
-        user_email = view.findViewById(R.id.user_id);
-        name.setText(current_user.getDisplayName());
+        TextView name = view.findViewById(R.id.user_name);
+        TextView user_email = view.findViewById(R.id.user_id);
+        name.setText(Objects.requireNonNull(current_user).getDisplayName());
         user_email.setText(current_user.getEmail());
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -99,27 +97,21 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         switch (text) {
             case "Change avatar":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
-                System.out.println("change avatar is clicked");
                 break;
             case "Change nickname":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
-                System.out.println("change nickname is clicked");
                 break;
             case "Upcoming events":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
-                System.out.println("Upcoming events is clicked");
                 break;
             case "Details":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
-                System.out.println("Details is clicked");
                 break;
             case "Settings":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
-                System.out.println("Settings is clicked");
                 break;
             case "Feedback":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
-                System.out.println("Feedback is clicked");
                 break;
         }
     }

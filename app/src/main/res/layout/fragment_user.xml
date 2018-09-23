@@ -42,7 +42,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1.5"
                 android:textStyle="bold"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:text="User Name"
                 android:textAlignment="center" />
 
