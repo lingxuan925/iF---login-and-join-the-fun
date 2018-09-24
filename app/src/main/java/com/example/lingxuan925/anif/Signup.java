@@ -55,6 +55,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         setSupportActionBar(toolbar);
 
         databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
+        System.out.println(databaseUsers);
 
         signIn = findViewById(R.id.signingmail);
         signIn.setOnClickListener(this);
@@ -100,24 +101,6 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             firebaseAuthWithGoogle(account);
-            final String emailToCheck = account.getEmail();
-            final String userName = account.getDisplayName();
-
-            databaseUsers.orderByChild("email").equalTo(emailToCheck).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.exists()) {
-                        String id = databaseUsers.push().getKey();
-                        AppUser aUser = new AppUser(userName, emailToCheck);
-                        databaseUsers.child(id).setValue(aUser);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
         }
         else {
             Toast.makeText(Signup.this, "Authentication Error!", Toast.LENGTH_LONG).show();
@@ -133,6 +116,21 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
+                            final FirebaseUser curUser = mAuth.getCurrentUser();
+                            databaseUsers.orderByChild("email").equalTo(curUser.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (!dataSnapshot.exists()) {
+                                        AppUser aUser = new AppUser(curUser.getDisplayName(), curUser.getEmail());
+                                        databaseUsers.child(curUser.getUid()).setValue(aUser);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());

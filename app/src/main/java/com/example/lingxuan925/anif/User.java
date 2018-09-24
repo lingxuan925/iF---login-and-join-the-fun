@@ -1,5 +1,7 @@
 package com.example.lingxuan925.anif;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,15 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
-
 
 public class User extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ArrayList<Option> optionList = new ArrayList<>();
@@ -26,6 +30,9 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
     FirebaseAuth.AuthStateListener mAuthListener;
     private TextView name;
     private TextView user_email;
+    private ImageView profile_pic;
+    Dialog myDialog;
+    DatabaseReference databaseRef;
 
     public User() {
         // Required empty public constructor
@@ -40,6 +47,8 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        myDialog = new Dialog(getContext());
+        databaseRef = FirebaseDatabase.getInstance().getReference("Users");
         initOptions();
     }
 
@@ -61,6 +70,8 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         user_email = view.findViewById(R.id.user_id);
         name.setText(current_user.getDisplayName());
         user_email.setText(current_user.getEmail());
+
+        profile_pic = view.findViewById(R.id.avatar);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -104,6 +115,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
             case "Change nickname":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 System.out.println("change nickname is clicked");
+                showChangeNamePopUp(view);
                 break;
             case "Upcoming events":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
@@ -121,6 +133,42 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 System.out.println("Feedback is clicked");
                 break;
+        }
+    }
+
+    public void showChangeNamePopUp(View view) {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
+        View mView = getLayoutInflater().inflate(R.layout.change_nickname_popup, null);
+
+        final EditText nicknameField = mView.findViewById(R.id.change_nickname);
+        Button mSave = mView.findViewById(R.id.btn_save);
+        mBuilder.setView(mView);
+
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+        mSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String editNickName = nicknameField.getText().toString();
+                if (!editNickName.isEmpty()){
+                    updateNickname(editNickName);
+                    dialog.dismiss();
+                } else{
+                    Toast.makeText(getActivity(),
+                            "field is empty!",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void updateNickname(String newNickName) {
+        try {
+            databaseRef.child(mAuth.getCurrentUser().getUid()).child("name").setValue(newNickName);
+            name.setText(newNickName);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
