@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,10 +26,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class User extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ArrayList<Option> optionList = new ArrayList<>();
+    private Button logoutBtn;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
     private TextView name;
@@ -68,7 +67,6 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser current_user = mAuth.getCurrentUser();
         databaseRef = FirebaseDatabase.getInstance().getReference("Users");
-        Button logoutBtn = view.findViewById(R.id.signout);
         logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
 
@@ -76,11 +74,6 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
 
         name = view.findViewById(R.id.user_name);
         user_email = view.findViewById(R.id.user_id);
-        logoutBtn.setOnClickListener(this);
-
-        TextView name = view.findViewById(R.id.user_name);
-        TextView user_email = view.findViewById(R.id.user_id);
-        name.setText(Objects.requireNonNull(current_user).getDisplayName());
         user_email.setText(current_user.getEmail());
 
         profile_pic = view.findViewById(R.id.avatar);
@@ -138,6 +131,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         switch (text) {
             case "Change avatar":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("change avatar is clicked");
                 break;
             case "Change nickname":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
@@ -146,6 +140,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 break;
             case "Upcoming events":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Upcoming events is clicked");
                 break;
             case "Details":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
@@ -154,9 +149,11 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 break;
             case "Settings":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Settings is clicked");
                 break;
             case "Feedback":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Feedback is clicked");
                 break;
         }
     }
@@ -202,4 +199,3 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         }
     }
 }
-
