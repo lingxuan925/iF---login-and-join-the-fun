@@ -160,6 +160,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
 
     public void editDetails() {
         startActivity(new Intent(getActivity(), Details.class));
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     public void showChangeNamePopUp(View view) {
