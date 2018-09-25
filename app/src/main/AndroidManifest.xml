@@ -1,23 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.lingxuan925.anif">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCZ4yOcjFumiYTAFAWdRUSpQj1lxBukjaw" />
+
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignInPage"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.signIn">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Signup"
+            android:label="@string/title_activity_gmail_signup"
+            android:theme="@style/AppTheme.signIn" />
     </application>
 
 </manifest>
