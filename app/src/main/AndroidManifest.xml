@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.lingxuan925.anif">
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCZ4yOcjFumiYTAFAWdRUSpQj1lxBukjaw" />
+
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
@@ -28,7 +31,7 @@
         <activity
             android:name=".Signup"
             android:label="@string/title_activity_gmail_signup"
-            android:theme="@style/AppTheme.signIn"></activity>
+            android:theme="@style/AppTheme.signIn" />
     </application>
 
 </manifest>
