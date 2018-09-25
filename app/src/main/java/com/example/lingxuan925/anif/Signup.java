@@ -121,7 +121,9 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     if (!dataSnapshot.exists()) {
-                                        AppUser aUser = new AppUser(curUser.getDisplayName(), curUser.getEmail());
+                                        AppUser aUser = new AppUser();
+                                        aUser.setEmail(curUser.getEmail());
+                                        aUser.setName(curUser.getDisplayName());
                                         databaseUsers.child(curUser.getUid()).setValue(aUser);
                                     }
                                 }

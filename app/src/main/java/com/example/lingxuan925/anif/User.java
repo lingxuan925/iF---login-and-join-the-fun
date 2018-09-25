@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,12 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 public class User extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
@@ -48,7 +53,6 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myDialog = new Dialog(getContext());
-        databaseRef = FirebaseDatabase.getInstance().getReference("Users");
         initOptions();
     }
 
@@ -63,12 +67,14 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         listView.setAdapter(adapter);
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser current_user = mAuth.getCurrentUser();
+        databaseRef = FirebaseDatabase.getInstance().getReference("Users");
         logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
 
+        final String cur_user_key = current_user.getUid();
+
         name = view.findViewById(R.id.user_name);
         user_email = view.findViewById(R.id.user_id);
-        name.setText(current_user.getDisplayName());
         user_email.setText(current_user.getEmail());
 
         profile_pic = view.findViewById(R.id.avatar);
@@ -81,6 +87,22 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 }
             }
         };
+
+        databaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.getKey().equals(cur_user_key)) {
+                        name.setText(ds.getValue(AppUser.class).getName());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         return view;
     }
 
@@ -124,6 +146,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
             case "Details":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 System.out.println("Details is clicked");
+                editDetails();
                 break;
             case "Settings":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
@@ -134,6 +157,11 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 System.out.println("Feedback is clicked");
                 break;
         }
+    }
+
+    public void editDetails() {
+        Details detailFragment = new Details();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_frame, detailFragment).addToBackStack(null).commit();
     }
 
     public void showChangeNamePopUp(View view) {
