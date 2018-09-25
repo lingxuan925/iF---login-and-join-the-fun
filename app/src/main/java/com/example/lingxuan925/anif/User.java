@@ -159,8 +159,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
     }
 
     public void editDetails() {
-        Details detailFragment = new Details();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_frame, detailFragment).addToBackStack(null).commit();
+        startActivity(new Intent(getActivity(), Details.class));
     }
 
     public void showChangeNamePopUp(View view) {

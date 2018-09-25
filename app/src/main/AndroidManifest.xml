@@ -33,6 +33,9 @@
             android:name=".Signup"
             android:label="@string/title_activity_gmail_signup"
             android:theme="@style/AppTheme.signIn" />
+        <activity
+            android:name=".Details"
+            android:theme="@style/AppTheme.signIn" />
     </application>
 
 </manifest>
