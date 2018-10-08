@@ -1,16 +1,14 @@
 package com.example.lingxuan925.anif;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -28,17 +29,21 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.util.Objects;
-
-public class Events extends Fragment {
+public class Events extends Fragment implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     TextView textView;
     Button button;
     Boolean onMap = true;
     MapView mMapView;
     private GoogleMap googleMap;
+    private GoogleApiClient mGoogleApiClient;
+    boolean isConnected = false;
+    Marker marker;
 
 
     public Events() {
@@ -48,6 +53,15 @@ public class Events extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
         View view = inflater.inflate(R.layout.fragment_events, container, false);
         final LinearLayout layoutMap = view.findViewById(R.id.map);
         final LinearLayout layoutList = view.findViewById(R.id.event_list);
@@ -89,6 +103,7 @@ public class Events extends Fragment {
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
+            mGoogleApiClient.connect();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,11 +120,7 @@ public class Events extends Fragment {
                             Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
                     return;
                 }
-                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
                 googleMap.setMyLocationEnabled(true);
-                LatLng sydney = new LatLng(-34, 151);
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
 
@@ -146,23 +157,73 @@ public class Events extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 101){
-            if (grantResults[0] != PackageManager.PERMISSION_GRANTED){
+        if (requestCode == 101) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(getActivity(),
                         "Please enable LOCATION ACCESS in settings to show your current location.",
-                        Toast.LENGTH_LONG).show();
-            }
-
-        else {
-                Fragment currentFragment = getFragmentManager().findFragmentByTag("fragment_events");
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                fragmentTransaction.detach(currentFragment);
-                fragmentTransaction.attach(currentFragment);
-                fragmentTransaction.commit();
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                if (ActivityCompat.checkSelfPermission(getActivity(),
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    googleMap.setMyLocationEnabled(true);
+                    if (isConnected)
+                        LocationServices.getFusedLocationProviderClient(getActivity())
+                                .getLastLocation()
+                                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                                    @Override
+                                    public void onSuccess(Location location) {
+                                        if (location != null) {
+                                            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                            moveCamera(currentLatLng, 14);
+                                        }
+                                    }
+                                });
+                }
             }
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        isConnected = true;
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            LocationServices.getFusedLocationProviderClient(getActivity())
+                    .getLastLocation()
+                    .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                moveCamera(currentLatLng, 14);
+                            }
+                        }
+                    });
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(getActivity(), "Connection Suspended", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(getActivity(), "Connection Failed", Toast.LENGTH_SHORT).show();
+    }
+
+    public void moveCamera(LatLng latlng, int zoom) {
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(latlng).zoom(zoom).build();
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    public void addMarker(String title, LatLng latLng){
+        if (marker != null)
+            marker.remove();
+        marker = googleMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title(title));
     }
 
 }
