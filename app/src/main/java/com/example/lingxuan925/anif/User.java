@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,7 @@ import java.util.Objects;
 
 public class User extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ArrayList<Option> optionList = new ArrayList<>();
+    private Button logoutBtn;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
     private TextView name;
@@ -68,7 +68,6 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser current_user = mAuth.getCurrentUser();
         databaseRef = FirebaseDatabase.getInstance().getReference("Users");
-        Button logoutBtn = view.findViewById(R.id.signout);
         logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
 
@@ -138,12 +137,14 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         switch (text) {
             case "Change avatar":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("change avatar is clicked");
                 break;
             case "Change nickname":
                 showChangeNamePopUp(view);
                 break;
             case "Upcoming events":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Upcoming events is clicked");
                 break;
             case "Details":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
@@ -151,16 +152,17 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 break;
             case "Settings":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Settings is clicked");
                 break;
             case "Feedback":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Feedback is clicked");
                 break;
         }
     }
 
     public void editDetails() {
-        Details detailFragment = new Details();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_frame, detailFragment).addToBackStack(null).commit();
+        startActivity(new Intent(getActivity(), Details.class));
     }
 
     public void showChangeNamePopUp(View view) {
@@ -199,4 +201,3 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         }
     }
 }
-
