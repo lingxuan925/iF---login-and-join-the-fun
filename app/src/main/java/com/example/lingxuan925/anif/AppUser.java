@@ -5,9 +5,16 @@ public class AppUser {
     String name;
     String email;
 
-    public AppUser(String userName, String userEmail) {
-        this.email = userEmail;
-        this.name = userName;
+    public AppUser() {
+
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {

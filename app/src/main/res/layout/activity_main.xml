@@ -14,7 +14,33 @@
         android:layout_width="match_parent"
         android:layout_height="82dp"
         android:background="@drawable/actionbar42"
-        android:fitsSystemWindows="true" />
+        android:fitsSystemWindows="true" >
+
+        <Button
+            android:id="@+id/button_search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/ic_action_search"
+            android:backgroundTint="@color/white"
+            />
+
+        <TextView
+            android:id="@+id/title_toolbar"
+            android:gravity="bottom"
+            android:layout_gravity = "center"
+            android:paddingBottom="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:fontFamily="cursive"
+            android:textStyle="bold"
+            android:text="Map"
+            android:textSize="25sp"
+            />
+
+    </android.support.v7.widget.Toolbar>
 
     <LinearLayout
         android:layout_width="match_parent"
