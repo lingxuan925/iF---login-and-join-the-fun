@@ -28,6 +28,7 @@ public class Details extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_details);
 //        databaseRef = FirebaseDatabase.getInstance().getReference("Users");
     }
 }
