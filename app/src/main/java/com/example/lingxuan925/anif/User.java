@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +34,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
     private Button logoutBtn;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthListener;
-    private TextView name;
+    private TextView name, whatsup;
     private TextView user_email;
     private ImageView profile_pic;
     Dialog myDialog;
@@ -61,6 +62,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
+
         OptionAdapter adapter = new OptionAdapter(view.getContext(), R.layout.option_item, optionList);
         ListView listView = view.findViewById(R.id.options_list);
         listView.setOnItemClickListener(this);
@@ -74,6 +76,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         final String cur_user_key = current_user.getUid();
 
         name = view.findViewById(R.id.user_name);
+        whatsup = view.findViewById(R.id.whats_up);
         user_email = view.findViewById(R.id.user_id);
         logoutBtn.setOnClickListener(this);
 
@@ -99,6 +102,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     if (ds.getKey().equals(cur_user_key)) {
                         name.setText(ds.getValue(AppUser.class).getName());
+                        whatsup.setText(ds.getValue(AppUser.class).getWhatsup());
                     }
                 }
             }
@@ -148,6 +152,9 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 break;
             case "Details":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                System.out.println("Details is clicked");
+                Intent intent = new Intent(getActivity(), Details.class);
+                startActivity(intent);
                 editDetails();
                 break;
             case "Settings":
@@ -163,6 +170,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
 
     public void editDetails() {
         startActivity(new Intent(getActivity(), Details.class));
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     public void showChangeNamePopUp(View view) {

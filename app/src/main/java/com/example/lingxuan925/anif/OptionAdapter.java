@@ -2,6 +2,7 @@ package com.example.lingxuan925.anif;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Path;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +17,12 @@ import java.util.ArrayList;
 
 public class OptionAdapter extends ArrayAdapter<Option> {
     private final int resourceId;
+    private ArrayList<Option> arraylist;
 
     public OptionAdapter(Context context, int viewResourceId, ArrayList<Option> options) {
         super(context, viewResourceId, options);
         resourceId = viewResourceId;
+        arraylist = options;
     }
 
     @NonNull
@@ -34,5 +37,10 @@ public class OptionAdapter extends ArrayAdapter<Option> {
             optionText.setText(option.getName());
         }
         return view;
+    }
+
+    public void refreshList(ArrayList<Option> options){
+        arraylist = options;
+        notifyDataSetChanged();
     }
 }
