@@ -35,7 +35,7 @@
             android:theme="@style/AppTheme.signIn" />
         <activity
             android:name=".Details"
-            android:theme="@style/AppTheme.signIn" />
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
