@@ -151,8 +151,6 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
             case "Details":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 System.out.println("Details is clicked");
-                Intent intent = new Intent(getActivity(), Details.class);
-                startActivity(intent);
                 editDetails();
                 break;
             case "Settings":
