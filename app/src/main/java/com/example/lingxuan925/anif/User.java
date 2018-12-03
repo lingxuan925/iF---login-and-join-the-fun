@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class User extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ArrayList<Option> optionList = new ArrayList<>();
@@ -38,7 +39,6 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
     private ImageView profile_pic;
     Dialog myDialog;
     DatabaseReference databaseRef;
-    LinearLayout layoutDetails;
 
     public User() {
         // Required empty public constructor
@@ -78,6 +78,11 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
         name = view.findViewById(R.id.user_name);
         whatsup = view.findViewById(R.id.whats_up);
         user_email = view.findViewById(R.id.user_id);
+        logoutBtn.setOnClickListener(this);
+
+        name = view.findViewById(R.id.user_name);
+        TextView user_email = view.findViewById(R.id.user_id);
+        name.setText(Objects.requireNonNull(current_user).getDisplayName());
         user_email.setText(current_user.getEmail());
 
         profile_pic = view.findViewById(R.id.avatar);
@@ -139,8 +144,6 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 System.out.println("change avatar is clicked");
                 break;
             case "Change nickname":
-                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
-                System.out.println("change nickname is clicked");
                 showChangeNamePopUp(view);
                 break;
             case "Upcoming events":
@@ -152,8 +155,7 @@ public class User extends Fragment implements View.OnClickListener, AdapterView.
                 System.out.println("Details is clicked");
                 Intent intent = new Intent(getActivity(), Details.class);
                 startActivity(intent);
-
-//                editDetails();
+                editDetails();
                 break;
             case "Settings":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
