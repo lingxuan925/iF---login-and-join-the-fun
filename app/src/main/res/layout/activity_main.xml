@@ -13,7 +13,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="82dp"
-        android:background="@drawable/actionbar42"
+        android:background="@drawable/actionbar4"
         android:fitsSystemWindows="true" >
 
         <Button
@@ -61,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="9"
-            android:background="@drawable/actionbar42"
+            android:background="@drawable/actionbar4"
             app:itemBackground="@null"
             app:itemIconTint="@color/color_state_menu_navi"
             app:itemTextColor="@color/color_state_menu_navi"
