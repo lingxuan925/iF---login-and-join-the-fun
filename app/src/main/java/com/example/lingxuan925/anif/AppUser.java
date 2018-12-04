@@ -4,12 +4,32 @@ import java.util.ArrayList;
 
 public class AppUser {
 
-    private String name;
-    private String email;
-    private String[] events;
+    String name;
+    String email;
+    String birthDate;
+    String whatsup;
 
-    AppUser() {
-        //events = new String[]{"hhhh","aaaa"};
+    ArrayList<String> eventIDs = new ArrayList<>();
+
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getWhatsup() {
+        return whatsup;
+    }
+
+    public void setWhatsup(String whatsup) {
+        this.whatsup = whatsup;
+    }
+
+    public AppUser() {
+
     }
 
     public void setName(String name) {
@@ -30,6 +50,11 @@ public class AppUser {
         return email;
     }
 
-    public String[] getEvents() { return events; }
+    public ArrayList<String> getEventIDs() {
+        return eventIDs;
+    }
 
+    public void setEventIDs(ArrayList<String> eventIDs) {
+        this.eventIDs = eventIDs;
+    }
 }

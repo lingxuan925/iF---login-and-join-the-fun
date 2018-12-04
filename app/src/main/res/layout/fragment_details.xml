@@ -1,28 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/comfortableGrey"
-    android:weightSum="100"
+    android:fitsSystemWindows="true"
+
+    android:id="@+id/detailsFragment"
     tools:context=".Details"
     tools:ignore="contentDescription">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="82dp"
+        android:background="@drawable/actionbar42"
+        android:fitsSystemWindows="true" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="6" />
 
-    <Button
-        android:id="@+id/backtouser"
+    <ListView
+        android:id="@+id/detail_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="20"
-        android:background="@drawable/button"
-        android:layout_gravity="center_horizontal"
-        android:text="Back"
-        style="?android:attr/borderlessButtonStyle" />
+        android:layout_weight="53"
+        android:divider="@drawable/divider"
+        android:drawSelectorOnTop="true"
+        android:dividerHeight="1dp"
+        android:paddingTop="5dp"
+        android:scrollbars="none" />
 
 </LinearLayout>

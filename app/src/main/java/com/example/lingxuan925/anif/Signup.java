@@ -31,6 +31,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class Signup extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     SignInButton signIn;
@@ -116,17 +118,23 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             final FirebaseUser curUser = mAuth.getCurrentUser();
-                            databaseUsers.orderByChild("email").equalTo(curUser.getEmail())
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if (!dataSnapshot.exists()) {
-                                                AppUser aUser = new AppUser();
-                                                aUser.setEmail(curUser.getEmail());
-                                                aUser.setName(curUser.getDisplayName());
-                                                databaseUsers.child(curUser.getUid()).setValue(aUser);
-                                            }
-                                        }
+                            databaseUsers.orderByChild("email").equalTo(curUser.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (!dataSnapshot.exists()) {
+                                        AppUser aUser = new AppUser();
+                                        aUser.setEmail(curUser.getEmail());
+                                        aUser.setName(curUser.getDisplayName());
+                                        aUser.setBirthDate("yyyy-mm-dd");
+                                        aUser.setWhatsup("What's up");
+                                        ArrayList<String> events = new ArrayList<>();
+                                        events.add("123");
+                                        events.add("345");
+                                        events.add("789");
+                                        aUser.setEventIDs(events);
+                                        databaseUsers.child(curUser.getUid()).setValue(aUser);
+                                    }
+                                }
 
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {
