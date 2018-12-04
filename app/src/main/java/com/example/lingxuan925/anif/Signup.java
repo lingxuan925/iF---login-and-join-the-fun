@@ -31,6 +31,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class Signup extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     SignInButton signIn;
@@ -101,8 +103,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             firebaseAuthWithGoogle(account);
-        }
-        else {
+        } else {
             Toast.makeText(Signup.this, "Authentication Error!", Toast.LENGTH_LONG).show();
         }
     }
@@ -124,15 +125,22 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                                         AppUser aUser = new AppUser();
                                         aUser.setEmail(curUser.getEmail());
                                         aUser.setName(curUser.getDisplayName());
+                                        aUser.setBirthDate("yyyy-mm-dd");
+                                        aUser.setWhatsup("What's up");
+                                        ArrayList<String> events = new ArrayList<>();
+                                        events.add("123");
+                                        events.add("345");
+                                        events.add("789");
+                                        aUser.setEventIDs(events);
                                         databaseUsers.child(curUser.getUid()).setValue(aUser);
                                     }
                                 }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
 
-                                }
-                            });
+                                        }
+                                    });
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
