@@ -5,15 +5,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -114,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initFragment() {
-        Fragment fragment1 = new Events();
-        Fragment fragment2 = new Friends();
-        Fragment fragment3 = new User();
+        Fragment fragment1 = new FragmentEvents();
+        Fragment fragment2 = new FragmentFriends();
+        Fragment fragment3 = new FragmentUser();
         fragments = new ArrayList<>();
         fragments.add(fragment1);
         fragments.add(fragment2);
@@ -136,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 if (onMap){
-                    Events events = (Events)(getSupportFragmentManager()
+                    FragmentEvents events = (FragmentEvents)(getSupportFragmentManager()
                             .findFragmentByTag("android:switcher:" + R.id.fragment_frame + ":0"));
                     events.addMarker(place.getName().toString(), place.getLatLng());
                     events.moveCamera(place.getLatLng(),15);

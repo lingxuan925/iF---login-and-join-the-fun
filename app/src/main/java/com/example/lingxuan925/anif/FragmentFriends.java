@@ -9,11 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-public class Friends extends Fragment {
+public class FragmentFriends extends Fragment {
 
     View view;
 
-    public Friends() {
+    public FragmentFriends() {
         // Required empty public constructor
     }
 

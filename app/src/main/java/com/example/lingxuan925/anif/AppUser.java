@@ -1,12 +1,15 @@
 package com.example.lingxuan925.anif;
 
+import java.util.ArrayList;
+
 public class AppUser {
 
-    String name;
-    String email;
+    private String name;
+    private String email;
+    private String[] events;
 
-    public AppUser() {
-
+    AppUser() {
+        //events = new String[]{"hhhh","aaaa"};
     }
 
     public void setName(String name) {
@@ -17,6 +20,8 @@ public class AppUser {
         this.email = email;
     }
 
+    public void setEventId(String[] events){this.events = events; }
+
     public String getName() {
         return name;
     }
@@ -24,4 +29,7 @@ public class AppUser {
     public String getEmail() {
         return email;
     }
+
+    public String[] getEvents() { return events; }
+
 }

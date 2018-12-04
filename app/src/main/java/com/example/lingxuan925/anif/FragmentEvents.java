@@ -33,7 +33,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class Events extends Fragment implements GoogleApiClient.ConnectionCallbacks,
+public class FragmentEvents extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     TextView textView;
@@ -46,7 +46,7 @@ public class Events extends Fragment implements GoogleApiClient.ConnectionCallba
     Marker marker;
 
 
-    public Events() {
+    public FragmentEvents() {
         // Required empty public constructor
     }
 
