@@ -43,7 +43,6 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         databaseRef = FirebaseDatabase.getInstance().getReference("Users");
-        setContentView(R.layout.fragment_details);
 
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
