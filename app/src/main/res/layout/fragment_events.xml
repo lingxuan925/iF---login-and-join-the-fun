@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
 
-    tools:context=".Events">
+    tools:context=".FragmentEvents">
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

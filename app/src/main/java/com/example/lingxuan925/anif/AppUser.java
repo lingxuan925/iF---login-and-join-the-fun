@@ -40,6 +40,8 @@ public class AppUser {
         this.email = email;
     }
 
+    public void setEventId(String[] events){this.events = events; }
+
     public String getName() {
         return name;
     }
