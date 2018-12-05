@@ -32,6 +32,13 @@ public class AppUser {
 
     }
 
+    public AppUser(String name, String email, String birthDate, String whatsup) {
+        this.name = name;
+        this.email = email;
+        this.birthDate = birthDate;
+        this.whatsup = whatsup;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -39,8 +46,6 @@ public class AppUser {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public void setEventId(String[] events){this.events = events; }
 
     public String getName() {
         return name;

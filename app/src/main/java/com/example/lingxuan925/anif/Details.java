@@ -43,7 +43,6 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         setContentView(R.layout.fragment_details);
         mAuth = FirebaseAuth.getInstance();
         databaseRef = FirebaseDatabase.getInstance().getReference("Users");
-        setContentView(R.layout.fragment_details);
 
         adapter = new OptionAdapter(this, R.layout.option_item, optionList);
         ListView listView = findViewById(R.id.detail_list);

@@ -1,18 +1,32 @@
 package com.example.lingxuan925.anif;
 
+import java.util.ArrayList;
+
 class Event {
     private String name;
     private String latitude;
     private String longitude;
     private int numLimit; //number of participants limit
-    private String[] participants;
+    private String owner;
+    private ArrayList<String> participants;
     private String description;
 
-    Event(String name, String latitude, String longitude, int numLimit){
+    public Event() {}
+
+    public Event(String name, String latitude, String longitude, int numLimit){
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.numLimit = numLimit;
+        participants = new ArrayList<>();
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public String getDescription() {
@@ -23,11 +37,11 @@ class Event {
         this.description = description;
     }
 
-    public String[] getParticipants() {
+    public ArrayList<String> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(String[] participants) {
+    public void setParticipants(ArrayList<String> participants) {
         this.participants = participants;
     }
 

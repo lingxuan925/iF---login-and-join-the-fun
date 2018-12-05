@@ -40,7 +40,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
     GoogleApiClient googleApiClient;
     private static final int REQ_CODE = 9001;
     FirebaseAuth.AuthStateListener mAuthListener;
-    DatabaseReference databaseUsers;
+    DatabaseReference databaseUsers, databaseEvents;
 
     @Override
     protected void onStart() {
@@ -57,7 +57,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         setSupportActionBar(toolbar);
 
         databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
-        System.out.println(databaseUsers);
+        databaseEvents = FirebaseDatabase.getInstance().getReference("Events");
 
         signIn = findViewById(R.id.signingmail);
         signIn.setOnClickListener(this);
@@ -133,6 +133,15 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                                         events.add("789");
                                         aUser.setEventIDs(events);
                                         databaseUsers.child(curUser.getUid()).setValue(aUser);
+
+                                        Event aEvent = new Event("test", "123", "123", 20);
+                                        ArrayList<String> users = new ArrayList<>();
+                                        users.add("111");
+                                        users.add("222");
+                                        users.add("333");
+                                        aEvent.setParticipants(users);
+                                        String key = databaseEvents.push().getKey();
+                                        databaseEvents.child(key).setValue(aEvent);
                                     }
                                 }
 

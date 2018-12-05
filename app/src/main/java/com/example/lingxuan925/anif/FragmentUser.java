@@ -80,9 +80,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         user_email = view.findViewById(R.id.user_id);
         logoutBtn.setOnClickListener(this);
 
-        name = view.findViewById(R.id.user_name);
-        TextView user_email = view.findViewById(R.id.user_id);
-        name.setText(Objects.requireNonNull(current_user).getDisplayName());
+        user_email = view.findViewById(R.id.user_id);
         user_email.setText(current_user.getEmail());
 
         profile_pic = view.findViewById(R.id.avatar);
@@ -147,6 +145,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                 break;
             case "Upcoming events":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                showUpcomingEvents();
                 break;
             case "Details":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
@@ -160,6 +159,11 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    public void showUpcomingEvents() {
+        startActivity(new Intent(getActivity(), UpcomingEvents.class));
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     public void editDetails() {
