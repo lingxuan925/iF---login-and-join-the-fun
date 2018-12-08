@@ -1,24 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/upcomingEventsFragment"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_height="match_parent"
+    android:background="@color/comfortableGrey"
+    android:fitsSystemWindows="true"
+    tools:context=".UpcomingEvents"
+    tools:ignore="contentDescription">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="82dp"
         android:background="@drawable/actionbar4"
-        android:fitsSystemWindows="true" />
+        android:fitsSystemWindows="true">
 
-    <TextView
+        <Button
+            android:id="@+id/button_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="start"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/back_icon" />
+
+        <TextView
+            android:id="@+id/title_toolbar"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:fontFamily="cursive"
+            android:gravity="bottom"
+            android:paddingBottom="15dp"
+            android:text="Upcoming Events"
+            android:textColor="@color/white"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="6" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="58dp"
+        android:orientation="vertical"
+        android:weightSum="100">
 
-    <ListView
-        android:id="@+id/upcoming_events_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></ListView>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-</LinearLayout>
+        <ListView
+            android:id="@+id/upcoming_events_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="94"
+            android:divider="@drawable/divider"
+            android:dividerHeight="1dp"
+            android:drawSelectorOnTop="true"
+            android:paddingTop="5dp"
+            android:scrollbars="none" />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

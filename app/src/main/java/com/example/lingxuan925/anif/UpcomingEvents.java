@@ -2,12 +2,13 @@ package com.example.lingxuan925.anif;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,11 +39,19 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.upcoming_events);
         upcomingEvents = new ArrayList<>();
+        Toolbar mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("");
+        Button backButton = mToolbar.findViewById(R.id.button_back);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         databaseRef = FirebaseDatabase.getInstance().getReference("Events");
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser current_user = mAuth.getCurrentUser();
-        final String cur_user_key = current_user.getUid();
 
         listView = findViewById(R.id.upcoming_events_list);
 

@@ -140,6 +140,10 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                                         users.add("222");
                                         users.add("333");
                                         aEvent.setParticipants(users);
+                                        aEvent.setHostname("Michael");
+                                        aEvent.setDescription("adsfasfasdfadsffdafsdfadsfasdfsdfasfdfds");
+                                        aEvent.setCurCnt(aEvent.getParticipants().size());
+                                        aEvent.setLocation("Toronto");
                                         String key = databaseEvents.push().getKey();
                                         databaseEvents.child(key).setValue(aEvent);
                                     }
