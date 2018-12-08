@@ -1,0 +1,81 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity = "center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/new_act_add_name"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/textview_background_border"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="true"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Enter event name"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/new_act_choose_location"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textview_background_border"
+            android:clickable="true"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Choose a location"
+            android:textColor="#000000"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/new_act_add_capacity"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:background="@drawable/textview_background_border"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="true"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Enter participants number"
+            android:textSize="15sp" />
+
+        <DatePicker
+            android:id="@+id/new_act_date_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner" />
+
+        <TimePicker
+            android:id="@+id/new_act_time_picker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-40dp"
+            android:timePickerMode="spinner" />
+
+        <EditText
+            android:id="@+id/new_act_add_description"
+            android:layout_width="250dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/textview_background_border"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="true"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Enter brief description"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+</ScrollView>

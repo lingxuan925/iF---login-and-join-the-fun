@@ -1,16 +1,24 @@
 package com.example.lingxuan925.anif;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -19,15 +27,19 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+    public class MainActivity extends AppCompatActivity {
 
     private List<Fragment> fragments;
     private BottomNavigationView navigation;
     private ViewPager viewPager;
     private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    private int PLACE_AUTOCOMPLETE_REQUEST_CODE_2 = 2;
     Intent searchIntent;
+    TextView pickLocationButton;
+    ImageButton searchButton;
     boolean onMap = true;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -58,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
-        Button searchButton = mToolbar.findViewById(R.id.button_search);
+        searchButton = mToolbar.findViewById(R.id.button_search);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,13 +81,129 @@ public class MainActivity extends AppCompatActivity {
             searchIntent =
                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                             .build(this);
+        } catch (GooglePlayServicesRepairableException e) {
+            //todo
+        } catch (GooglePlayServicesNotAvailableException e) {
+            //todo
         }
-        catch (GooglePlayServicesRepairableException e) {
-            // TODO: Handle the error.
-        }
-        catch (GooglePlayServicesNotAvailableException e) {
-            // TODO: Handle the error.
-        }
+        ImageButton addButton = mToolbar.findViewById(R.id.button_add_event);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View view = View.inflate(v.getContext(), R.layout.add_event_page_layout, null);
+
+                final EditText eventNameText = view.findViewById(R.id.new_act_add_name);
+                eventNameText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        eventNameText.setText("");
+                    }
+                });
+                eventNameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if(hasFocus)
+                        {
+                            eventNameText.callOnClick();
+                        }
+                    }
+                });
+
+
+                pickLocationButton = view.findViewById(R.id.new_act_choose_location);
+                pickLocationButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent locationIntent;
+                        try {
+                            locationIntent =
+                                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                                            .build(MainActivity.this);
+                            startActivityForResult(locationIntent, PLACE_AUTOCOMPLETE_REQUEST_CODE_2);
+                        } catch (GooglePlayServicesRepairableException e) {
+                            //todo
+                        } catch (GooglePlayServicesNotAvailableException e) {
+                            //todo
+                        }
+                    }
+                });
+
+                final EditText participantsNumText = view.findViewById(R.id.new_act_add_capacity);
+                participantsNumText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        participantsNumText.setText("");
+                    }
+                });
+                participantsNumText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if(hasFocus)
+                        {
+                            participantsNumText.callOnClick();
+                        }
+                    }
+                });
+
+
+                final EditText descriptionText = view.findViewById(R.id.new_act_add_description);
+                descriptionText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (descriptionText.getText().toString().equals("Enter brief description"))
+                            descriptionText.setText("");
+                    }
+                });
+                descriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if(hasFocus)
+                        {
+                            descriptionText.callOnClick();
+                        }
+                    }
+                });
+
+
+                final DatePicker datePicker = view.findViewById(R.id.new_act_date_picker);
+                final TimePicker timePicker = view.findViewById(R.id.new_act_time_picker);
+
+                final Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DATE);
+                int hour = calendar.get(Calendar.HOUR);
+                datePicker.init(year, month, day, null);
+
+                timePicker.setIs24HourView(true);
+                timePicker.setHour(hour);
+                timePicker.setMinute(0);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setView(view);
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String name = eventNameText.getText().toString();
+                        //TODO: you can get event name form here
+                        int capacity = Integer.parseInt(participantsNumText.getText().toString());
+                        //TODO: you can get event capacity from here
+                        calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()
+                                , timePicker.getHour(), timePicker.getMinute());
+                        //TODO: you can get calender chosen by user from here
+                        String description = descriptionText.getText().toString();
+                        //TODO: you can get the brief description of the event from here
+                    }
+                });
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                builder.create().show();
+            }
+        });
 
         initFragment();
         navigation = findViewById(R.id.navigation);
@@ -93,12 +221,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int i) {
-                if (i == 0) {
-                    onMap = true;
-                }
-                else {
-                    onMap = false;
-                }
+                if (i != 0)
+                    searchButton.setVisibility(View.GONE);
+                else searchButton.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -131,11 +256,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                if (onMap){
-                    FragmentEvents events = (FragmentEvents)(getSupportFragmentManager()
+                if (onMap) {
+                    FragmentEvents events = (FragmentEvents) (getSupportFragmentManager()
                             .findFragmentByTag("android:switcher:" + R.id.fragment_frame + ":0"));
                     events.addMarker(place.getName().toString(), place.getLatLng());
-                    events.moveCamera(place.getLatLng(),15);
+                    events.moveCamera(place.getLatLng(), 15);
                 }
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
@@ -144,6 +269,14 @@ public class MainActivity extends AppCompatActivity {
 
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
+            }
+        }
+
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE_2) {
+            if (resultCode == RESULT_OK) {
+                Place newAddedPlace = PlaceAutocomplete.getPlace(this, data);
+                pickLocationButton.setText(newAddedPlace.getName());
+                //TODO: you can get the place chosen by user from here
             }
         }
     }
