@@ -14,39 +14,36 @@
         android:layout_width="match_parent"
         android:layout_height="82dp"
         android:background="@drawable/actionbar4"
-        android:fitsSystemWindows="true" >
+        android:fitsSystemWindows="true">
 
-        <Button
-            android:id="@+id/button_addevent"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+        <ImageButton
+            android:id="@+id/button_add_event"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/ic_add_black_24dp"/>
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/add_icon" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button_search"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/ic_action_search"
-            android:backgroundTint="@color/comfortableGrey"
-            />
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_search_black_24dp" />
 
         <TextView
             android:id="@+id/title_toolbar"
-            android:gravity="bottom"
-            android:layout_gravity = "center"
-            android:paddingBottom="15dp"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/white"
+            android:layout_gravity="center"
             android:fontFamily="cursive"
-            android:textStyle="bold"
+            android:gravity="bottom"
+            android:paddingBottom="15dp"
             android:text="Map"
+            android:textColor="@color/white"
             android:textSize="25sp"
-            />
+            android:textStyle="bold" />
 
     </android.support.v7.widget.Toolbar>
 
@@ -61,8 +58,7 @@
             android:id="@+id/fragment_frame"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="91">
-        </com.example.lingxuan925.anif.MyViewPager>
+            android:layout_weight="91" />
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
