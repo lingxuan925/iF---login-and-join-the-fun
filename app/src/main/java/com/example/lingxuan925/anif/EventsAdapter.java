@@ -20,7 +20,6 @@ public class EventsAdapter extends ArrayAdapter<Event> {
     public EventsAdapter(Context context, int resource, ArrayList<Event> events) {
         super(context, resource, events);
         eventList = events;
-        System.out.println(events.get(0).getName());
     }
 
     @Override
@@ -29,7 +28,6 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.cardview, parent, false);
         }
-        System.out.println(eventList.get(0).getName()+"...................");
 
         cardView = convertView.findViewById(R.id.cardViewMeeting);
         textViewTitle = convertView.findViewById(R.id.tViewTitle);
@@ -45,10 +43,11 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         textViewTitle.setText(eventList.get(position).getName());
         textViewMax.setText(Integer.toString(eventList.get(position).getNumLimit()));
         textViewCurrent.setText(Integer.toString(eventList.get(position).getParticipants().size()));
-//        textViewStartTime.setText(eventList.get(position).);
-//        textViewMonth.setText(eventList.get(position).getDate().split("-")[1]);
-//        textViewDay.setText(eventList.get(position).getDate().split("-")[2]);
-//        textViewLocation.setText(eventList.get(position).getLocation());
+        textViewStartTime.setText(eventList.get(position).getStartTime());
+        textViewMonth.setText(eventList.get(position).getDate().split("-")[1]);
+        textViewDay.setText(eventList.get(position).getDate().split("-")[2]);
+        textViewLocation.setText(eventList.get(position).getLocation());
+        textViewDesc.setText(eventList.get(position).getDescription());
 
         return convertView;
     }

@@ -25,13 +25,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 
 public class Signup extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -40,7 +33,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
     GoogleApiClient googleApiClient;
     private static final int REQ_CODE = 9001;
     FirebaseAuth.AuthStateListener mAuthListener;
-    DatabaseReference databaseUsers, databaseEvents;
+    DatabaseHelper dbHelper;
 
     @Override
     protected void onStart() {
@@ -55,9 +48,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         setContentView(R.layout.activity_signup);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
-        databaseEvents = FirebaseDatabase.getInstance().getReference("Events");
+        dbHelper = new DatabaseHelper();
 
         signIn = findViewById(R.id.signingmail);
         signIn.setOnClickListener(this);
@@ -118,42 +109,8 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             final FirebaseUser curUser = mAuth.getCurrentUser();
-                            databaseUsers.orderByChild("email").equalTo(curUser.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (!dataSnapshot.exists()) {
-                                        AppUser aUser = new AppUser();
-                                        aUser.setEmail(curUser.getEmail());
-                                        aUser.setName(curUser.getDisplayName());
-                                        aUser.setBirthDate("yyyy-mm-dd");
-                                        aUser.setWhatsup("What's up");
-                                        ArrayList<String> events = new ArrayList<>();
-                                        events.add("123");
-                                        events.add("345");
-                                        events.add("789");
-                                        aUser.setEventIDs(events);
-                                        databaseUsers.child(curUser.getUid()).setValue(aUser);
-
-                                        Event aEvent = new Event("test", "123", "123", 20);
-                                        ArrayList<String> users = new ArrayList<>();
-                                        users.add("111");
-                                        users.add("222");
-                                        users.add("333");
-                                        aEvent.setParticipants(users);
-                                        aEvent.setHostname("Michael");
-                                        aEvent.setDescription("adsfasfasdfadsffdafsdfadsfasdfsdfasfdfds");
-                                        aEvent.setCurCnt(aEvent.getParticipants().size());
-                                        aEvent.setLocation("Toronto");
-                                        String key = databaseEvents.push().getKey();
-                                        databaseEvents.child(key).setValue(aEvent);
-                                    }
-                                }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
+                            AppUser aUser = new AppUser(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getEmail(), "yyyy-mm-dd", "What's up");
+                            dbHelper.createUser(aUser, mAuth);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());

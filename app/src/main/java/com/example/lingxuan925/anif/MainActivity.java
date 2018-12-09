@@ -25,12 +25,15 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-    public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private List<Fragment> fragments;
     private BottomNavigationView navigation;
@@ -40,6 +43,9 @@ import java.util.List;
     Intent searchIntent;
     TextView pickLocationButton;
     ImageButton searchButton;
+    Place newAddedPlace;
+    FirebaseAuth mAuth;
+    private DatabaseHelper dbHelper;
     boolean onMap = true;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -66,6 +72,8 @@ import java.util.List;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mAuth = FirebaseAuth.getInstance();
+        dbHelper = new DatabaseHelper();
 
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -184,15 +192,23 @@ import java.util.List;
                 builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String name = eventNameText.getText().toString();
-                        //TODO: you can get event name form here
-                        int capacity = Integer.parseInt(participantsNumText.getText().toString());
-                        //TODO: you can get event capacity from here
-                        calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth()
-                                , timePicker.getHour(), timePicker.getMinute());
-                        //TODO: you can get calender chosen by user from here
-                        String description = descriptionText.getText().toString();
-                        //TODO: you can get the brief description of the event from here
+
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    int capacity = 10; //default capacity of 10 for event
+                    String name = eventNameText.getText().toString();
+                    if (!participantsNumText.getText().toString().isEmpty() && !participantsNumText.getText().toString().equals("Enter participants number")) capacity = Integer.parseInt(participantsNumText.getText().toString());
+                    calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
+                    String dateTime = formatter.format(calendar.getTime()).toString();
+                    String date = dateTime.split(" ")[0];
+                    String time = dateTime.split(" ")[1];
+                    String description = descriptionText.getText().toString();
+                    String location = pickLocationButton.getText().toString();
+                    LatLng latlng = new LatLng(37.419857, -122.078827);
+                    if (newAddedPlace != null) latlng = newAddedPlace.getLatLng();
+
+                    Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude);
+                    newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
+                    dbHelper.createEvent(newEvent, mAuth);
                     }
                 });
                 builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -274,7 +290,7 @@ import java.util.List;
 
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE_2) {
             if (resultCode == RESULT_OK) {
-                Place newAddedPlace = PlaceAutocomplete.getPlace(this, data);
+                newAddedPlace = PlaceAutocomplete.getPlace(this, data);
                 pickLocationButton.setText(newAddedPlace.getName());
                 //TODO: you can get the place chosen by user from here
             }

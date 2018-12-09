@@ -3,17 +3,23 @@ package com.example.lingxuan925.anif;
 import java.util.ArrayList;
 
 class Event {
-    private String name, latitude, longitude, location, description, hostname;
+    private String name, location, description, hostname, date, startTime;
     private int numLimit, curCnt; //number of participants limit
+    private double latitude, longitude;
     private ArrayList<String> participants;
 
     public Event() {}
 
-    public Event(String name, String latitude, String longitude, int numLimit){
+    public Event(String name, String location, String description, String hostname, String date, String startTime, int numLimit, double latitude, double longitude){
         this.name = name;
+        this.location = location;
+        this.description = description;
+        this.hostname = hostname;
+        this.date = date;
+        this.startTime = startTime;
+        this.numLimit = numLimit;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.numLimit = numLimit;
         participants = new ArrayList<>();
     }
 
@@ -41,19 +47,19 @@ class Event {
         this.numLimit = numLimit;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
@@ -87,5 +93,21 @@ class Event {
 
     public void setCurCnt(int curCnt) {
         this.curCnt = curCnt;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 }

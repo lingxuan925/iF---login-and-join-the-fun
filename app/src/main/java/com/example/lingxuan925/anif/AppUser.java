@@ -9,7 +9,7 @@ public class AppUser {
     String birthDate;
     String whatsup;
 
-    ArrayList<String> eventIDs = new ArrayList<>();
+    ArrayList<String> eventIDs;
 
 
     public String getBirthDate() {
@@ -37,6 +37,7 @@ public class AppUser {
         this.email = email;
         this.birthDate = birthDate;
         this.whatsup = whatsup;
+        eventIDs = new ArrayList<>();
     }
 
     public void setName(String name) {

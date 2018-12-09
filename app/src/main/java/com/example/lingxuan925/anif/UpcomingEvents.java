@@ -9,21 +9,16 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private ArrayList<Event> upcomingEvents;
-    DatabaseReference databaseRef;
     FirebaseAuth mAuth;
     ListView listView;
     EventsAdapter adapter;
+    DatabaseHelper dbHelper;
 
     public UpcomingEvents() {
 
@@ -38,6 +33,7 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.upcoming_events);
+        dbHelper = new DatabaseHelper();
         upcomingEvents = new ArrayList<>();
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -50,28 +46,13 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
             }
         });
 
-        databaseRef = FirebaseDatabase.getInstance().getReference("Events");
         mAuth = FirebaseAuth.getInstance();
 
         listView = findViewById(R.id.upcoming_events_list);
-
-        databaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Event anEvent = ds.getValue(Event.class);
-                    upcomingEvents.add(anEvent);
-                }
-                adapter = new EventsAdapter(UpcomingEvents.this, 0, upcomingEvents);
-                listView.setOnItemClickListener(UpcomingEvents.this);
-                listView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        adapter = new EventsAdapter(UpcomingEvents.this, 0, upcomingEvents);
+        listView.setOnItemClickListener(UpcomingEvents.this);
+        listView.setAdapter(adapter);
+        dbHelper.fetchUpcomingEvents(mAuth, adapter, upcomingEvents);
     }
 
     @Override
