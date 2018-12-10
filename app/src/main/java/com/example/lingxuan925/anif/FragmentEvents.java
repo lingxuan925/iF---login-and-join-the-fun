@@ -2,6 +2,7 @@ package com.example.lingxuan925.anif;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -15,8 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,9 +36,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FragmentEvents extends Fragment implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener {
 
     TextView textView;
     Button button;
@@ -45,12 +55,15 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     private GoogleApiClient mGoogleApiClient;
     boolean isConnected = false;
     Marker marker;
-
+    private ArrayList<Event> radiusList;
+    private EventsAdapter adapter;
+    FirebaseAuth mAuth;
+    private DatabaseHelper dbHelper;
+    private LatLng currentLatLng;
 
     public FragmentEvents() {
         // Required empty public constructor
     }
-
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -67,6 +80,9 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         final LinearLayout layoutMap = view.findViewById(R.id.map);
         final LinearLayout layoutList = view.findViewById(R.id.event_list);
         layoutList.setVisibility(View.GONE);
+        radiusList = new ArrayList<>();
+        mAuth = FirebaseAuth.getInstance();
+        dbHelper = new DatabaseHelper();
 
         final TranslateAnimation mShowAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
                 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
@@ -87,6 +103,14 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     layoutMap.setVisibility(View.GONE);
                     layoutList.startAnimation(mShowAction);
                     layoutList.setVisibility(View.VISIBLE);
+
+                    //FETCHING EVENTS TO LISTVIEW BY RADIUS IN SETTINGS
+                    ListView listView = layoutList.findViewById(R.id.radius_list);
+                    adapter = new EventsAdapter(getContext(), 0, radiusList);
+                    listView.setOnItemClickListener(FragmentEvents.this);
+                    listView.setAdapter(adapter);
+
+                    refreshRadiusList();
                     onMap = false;
                 } else {
                     layoutList.startAnimation(mHiddenAction);
@@ -176,7 +200,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                                     @Override
                                     public void onSuccess(Location location) {
                                         if (location != null) {
-                                            LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                            currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                             moveCamera(currentLatLng, 14);
                                         }
                                     }
@@ -197,7 +221,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                         @Override
                         public void onSuccess(Location location) {
                             if (location != null) {
-                                LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 moveCamera(currentLatLng, 14);
                             }
                         }
@@ -227,4 +251,25 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                 .title(title));
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    public void refreshRadiusList() {
+        dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    dbHelper.fetchEventsWithinRadius(currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
+                    System.out.println(radiusList.size());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 }

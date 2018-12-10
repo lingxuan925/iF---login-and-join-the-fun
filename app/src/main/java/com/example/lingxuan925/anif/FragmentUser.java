@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
 
 public class FragmentUser extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ArrayList<Option> optionList = new ArrayList<>();
@@ -153,11 +154,17 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                 break;
             case "Settings":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                showSettings();
                 break;
             case "Feedback":
                 Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    public void showSettings() {
+        startActivity(new Intent(getActivity(), Settings.class));
+        getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     public void showUpcomingEvents() {

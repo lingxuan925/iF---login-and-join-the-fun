@@ -1,5 +1,8 @@
 package com.example.lingxuan925.anif;
 
+import android.location.Location;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,11 +39,42 @@ public class DatabaseHelper {
         databaseEvents.orderByChild("date").startAt(modifiedDate).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                upcomingEvents.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Event anEvent = ds.getValue(Event.class);
                     if (anEvent.getParticipants().contains(mAuth.getCurrentUser().getUid())) upcomingEvents.add(anEvent);
                 }
                 adapter.refreshList(upcomingEvents);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void fetchEventsWithinRadius(final LatLng currentLatLng, final String radius, final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> radiusEvents) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        Date tomorrow = calendar.getTime();
+        String modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(tomorrow);
+
+        databaseEvents.orderByChild("date").startAt(modifiedDate).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                radiusEvents.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Event anEvent = ds.getValue(Event.class);
+                    Location currentLoc = new Location("current location");
+                    currentLoc.setLatitude(currentLatLng.latitude);
+                    currentLoc.setLongitude(currentLatLng.longitude);
+                    Location eventLoc = new Location("event location");
+                    eventLoc.setLatitude(anEvent.getLatitude());
+                    eventLoc.setLongitude(anEvent.getLongitude());
+                    if (currentLoc.distanceTo(eventLoc)/1000 < Integer.parseInt(radius)) radiusEvents.add(anEvent);
+                }
+                adapter.refreshList(radiusEvents);
             }
 
             @Override
@@ -73,7 +107,6 @@ public class DatabaseHelper {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     AppUser curUser = dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class);
-                    System.out.println(curUser.getEventIDs());
                     curUser.getEventIDs().add(evtKey);
                     databaseUsers.child(mAuth.getCurrentUser().getUid()).child("eventIDs").setValue(curUser.getEventIDs());
                 }
@@ -84,5 +117,13 @@ public class DatabaseHelper {
 
             }
         });
+    }
+
+    public void updateUser(String key, String val, FirebaseAuth mAuth) {
+        databaseUsers.child(mAuth.getCurrentUser().getUid()).child(key).setValue(val);
+    }
+
+    public DatabaseReference getDatabaseUsers() {
+        return databaseUsers;
     }
 }

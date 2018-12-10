@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 public class AppUser {
 
-    String name;
-    String email;
-    String birthDate;
-    String whatsup;
+    private String name;
+    private String email;
+    private String birthDate;
+    private String whatsup;
+    private String radius;
 
     ArrayList<String> eventIDs;
 
@@ -32,11 +33,12 @@ public class AppUser {
 
     }
 
-    public AppUser(String name, String email, String birthDate, String whatsup) {
+    public AppUser(String name, String email, String birthDate, String whatsup, String radius) {
         this.name = name;
         this.email = email;
         this.birthDate = birthDate;
         this.whatsup = whatsup;
+        this.radius = radius;
         eventIDs = new ArrayList<>();
     }
 
@@ -62,5 +64,13 @@ public class AppUser {
 
     public void setEventIDs(ArrayList<String> eventIDs) {
         this.eventIDs = eventIDs;
+    }
+
+    public String getRadius() {
+        return radius;
+    }
+
+    public void setRadius(String radius) {
+        this.radius = radius;
     }
 }

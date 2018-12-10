@@ -43,6 +43,10 @@
         <activity
             android:name=".UpcomingEvents"
             android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".Settings"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

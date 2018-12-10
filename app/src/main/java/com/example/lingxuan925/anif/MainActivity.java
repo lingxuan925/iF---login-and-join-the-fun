@@ -1,5 +1,6 @@
 package com.example.lingxuan925.anif;
 
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -248,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private void initFragment() {
         Fragment fragment1 = new FragmentEvents();
