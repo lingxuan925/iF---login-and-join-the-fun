@@ -83,6 +83,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         radiusList = new ArrayList<>();
         mAuth = FirebaseAuth.getInstance();
         dbHelper = new DatabaseHelper();
+        adapter = new EventsAdapter(getContext(), 0, radiusList);
 
         final TranslateAnimation mShowAction = new TranslateAnimation(Animation.RELATIVE_TO_SELF,
                 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
@@ -106,7 +107,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
                     //FETCHING EVENTS TO LISTVIEW BY RADIUS IN SETTINGS
                     ListView listView = layoutList.findViewById(R.id.radius_list);
-                    adapter = new EventsAdapter(getContext(), 0, radiusList);
+
                     listView.setOnItemClickListener(FragmentEvents.this);
                     listView.setAdapter(adapter);
 
@@ -117,6 +118,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     layoutList.setVisibility(View.GONE);
                     layoutMap.startAnimation(mShowAction);
                     layoutMap.setVisibility(View.VISIBLE);
+                    refreshRadiusList();
                     onMap = true;
                 }
             }
@@ -156,6 +158,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+        if (currentLatLng != null) refreshRadiusList();
     }
 
     @Override
@@ -202,6 +205,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                                         if (location != null) {
                                             currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                             moveCamera(currentLatLng, 14);
+                                            refreshRadiusList();
                                         }
                                     }
                                 });
@@ -223,6 +227,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                             if (location != null) {
                                 currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 moveCamera(currentLatLng, 14);
+                                refreshRadiusList();
                             }
                         }
                     });
@@ -261,8 +266,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    dbHelper.fetchEventsWithinRadius(currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
-                    System.out.println(radiusList.size());
+                    dbHelper.fetchEventsWithinRadius(googleMap, currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
                 }
             }
 

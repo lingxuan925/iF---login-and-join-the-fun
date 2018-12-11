@@ -2,7 +2,9 @@ package com.example.lingxuan925.anif;
 
 import android.location.Location;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,7 +56,7 @@ public class DatabaseHelper {
         });
     }
 
-    public void fetchEventsWithinRadius(final LatLng currentLatLng, final String radius, final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> radiusEvents) {
+    public void fetchEventsWithinRadius(final GoogleMap googleMap, final LatLng currentLatLng, final String radius, final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> radiusEvents) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1);
         Date tomorrow = calendar.getTime();
@@ -64,6 +66,7 @@ public class DatabaseHelper {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 radiusEvents.clear();
+                googleMap.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Event anEvent = ds.getValue(Event.class);
                     Location currentLoc = new Location("current location");
@@ -72,7 +75,10 @@ public class DatabaseHelper {
                     Location eventLoc = new Location("event location");
                     eventLoc.setLatitude(anEvent.getLatitude());
                     eventLoc.setLongitude(anEvent.getLongitude());
-                    if (currentLoc.distanceTo(eventLoc)/1000 < Integer.parseInt(radius)) radiusEvents.add(anEvent);
+                    if (currentLoc.distanceTo(eventLoc)/1000 < Integer.parseInt(radius)) {
+                        googleMap.addMarker(new MarkerOptions().position(new LatLng(anEvent.getLatitude(), anEvent.getLongitude())).title(anEvent.getName()));
+                        radiusEvents.add(anEvent);
+                    }
                 }
                 adapter.refreshList(radiusEvents);
             }
