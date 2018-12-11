@@ -2,14 +2,23 @@ package com.example.lingxuan925.anif;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fxn.pix.Pix;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,10 +35,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.yalantis.ucrop.UCrop;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
+
+import static android.app.Activity.RESULT_OK;
 
 public class FragmentUser extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private ArrayList<Option> optionList = new ArrayList<>();
@@ -37,7 +52,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
     FirebaseAuth.AuthStateListener mAuthListener;
     private TextView name, whatsup;
     private TextView user_email;
-    private ImageView profile_pic;
+    ImageView profile_pic;
     Dialog myDialog;
     DatabaseReference databaseRef;
 
@@ -54,6 +69,8 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         myDialog = new Dialog(getContext());
         initOptions();
     }
@@ -79,11 +96,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         name = view.findViewById(R.id.user_name);
         whatsup = view.findViewById(R.id.whats_up);
         user_email = view.findViewById(R.id.user_id);
-        logoutBtn.setOnClickListener(this);
-
-        user_email = view.findViewById(R.id.user_id);
         user_email.setText(current_user.getEmail());
-
         profile_pic = view.findViewById(R.id.avatar);
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -139,7 +152,9 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         String text = (String) ((TextView) view.findViewById(R.id.option_name)).getText();
         switch (text) {
             case "Change avatar":
-                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                Pix.start(getFragmentManager().findFragmentByTag("android:switcher:" + R.id.fragment_frame + ":2"),
+                        1001,
+                        1);
                 break;
             case "Change nickname":
                 showChangeNamePopUp(view);
@@ -192,10 +207,10 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
             @Override
             public void onClick(View view) {
                 final String editNickName = nicknameField.getText().toString();
-                if (!editNickName.isEmpty()){
+                if (!editNickName.isEmpty()) {
                     updateNickname(editNickName);
                     dialog.dismiss();
-                } else{
+                } else {
                     Toast.makeText(getActivity(),
                             "field is empty!",
                             Toast.LENGTH_SHORT).show();
@@ -210,6 +225,33 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
             name.setText(newNickName);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            final Uri resultUri = UCrop.getOutput(data);
+            profile_pic.setColorFilter(Color.TRANSPARENT);
+            profile_pic.setImageURI(resultUri);
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            final Throwable cropError = UCrop.getError(data);
+            Toast.makeText(getActivity(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        if (resultCode == RESULT_OK && (requestCode == 1001 || requestCode == 1002)) {
+            ArrayList<String> returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS);
+            Toast.makeText(getActivity(), returnValue.get(0), Toast.LENGTH_SHORT).show();
+            Uri selectedImage = Uri.fromFile(new File(returnValue.get(0)));
+            UCrop.Options options = new UCrop.Options();
+            options.setFreeStyleCropEnabled(true);
+            options.setCircleDimmedLayer(true);
+            options.setShowCropGrid(false);
+            UCrop.of(selectedImage, selectedImage)
+                    .withOptions(options)
+                    .withAspectRatio(16, 9)
+                    .start(getContext(), this, UCrop.REQUEST_CROP);
         }
     }
 }
