@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private int PLACE_AUTOCOMPLETE_REQUEST_CODE_2 = 2;
     Intent searchIntent;
     TextView pickLocationButton;
-    ImageButton searchButton;
+    ImageView searchButton;
     Place newAddedPlace;
     FirebaseAuth mAuth;
     private DatabaseHelper dbHelper;
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (GooglePlayServicesNotAvailableException e) {
             //todo
         }
-        ImageButton addButton = mToolbar.findViewById(R.id.button_add_event);
+        ImageView addButton = mToolbar.findViewById(R.id.button_add_event);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
