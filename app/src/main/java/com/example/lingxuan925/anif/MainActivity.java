@@ -277,6 +277,7 @@ public class MainActivity extends AppCompatActivity {
                             .findFragmentByTag("android:switcher:" + R.id.fragment_frame + ":0"));
                     events.addMarker(place.getName().toString(), place.getLatLng());
                     events.moveCamera(place.getLatLng(), 15);
+                    events.refreshRadiusListAfterSearch(place.getLatLng());
                 }
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {

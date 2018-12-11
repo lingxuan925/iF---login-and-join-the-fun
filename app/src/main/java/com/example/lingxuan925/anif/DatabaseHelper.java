@@ -3,6 +3,7 @@ package com.example.lingxuan925.anif;
 import android.location.Location;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,17 +22,31 @@ public class DatabaseHelper {
 
     DatabaseReference databaseUsers, databaseEvents;
 
+    /**
+     * initialize constructor with respective nodes events and users
+     */
     public DatabaseHelper() {
         databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
         databaseEvents = FirebaseDatabase.getInstance().getReference("Events");
     }
 
+    /**
+     * added event to firebase event node
+     * @param evt - the event object
+     * @param mAuth - the authentication object used to get user uid to get the specific user node in firebase
+     */
     public void createEvent(Event evt, FirebaseAuth mAuth) {
         String key = databaseEvents.push().getKey();
         updateUserEventList(key, mAuth);
         databaseEvents.child(key).setValue(evt);
     }
 
+    /**
+     * fetch upcoming events starting from tomorrow's date
+     * @param mAuth
+     * @param adapter - event adapter
+     * @param upcomingEvents - arraylist of events
+     */
     public void fetchUpcomingEvents(final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> upcomingEvents) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1);
@@ -56,6 +71,18 @@ public class DatabaseHelper {
         });
     }
 
+    /**
+     * fetch events within specified radius in settings, it creates a location object for current
+     * user location and event location and sets their respective lat and lng, then call the
+     * method distance to to get difference in meters, then divide by 1000 and compare with radius,
+     * which is in kilometers.
+     * @param googleMap
+     * @param currentLatLng - current user's location as latlng object
+     * @param radius
+     * @param mAuth
+     * @param adapter
+     * @param radiusEvents - arraylist of events
+     */
     public void fetchEventsWithinRadius(final GoogleMap googleMap, final LatLng currentLatLng, final String radius, final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> radiusEvents) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1);
@@ -76,7 +103,7 @@ public class DatabaseHelper {
                     eventLoc.setLatitude(anEvent.getLatitude());
                     eventLoc.setLongitude(anEvent.getLongitude());
                     if (currentLoc.distanceTo(eventLoc)/1000 < Integer.parseInt(radius)) {
-                        googleMap.addMarker(new MarkerOptions().position(new LatLng(anEvent.getLatitude(), anEvent.getLongitude())).title(anEvent.getName()));
+                        googleMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.event_flag_small)).position(new LatLng(anEvent.getLatitude(), anEvent.getLongitude())).title(anEvent.getName()).snippet(anEvent.getDescription()));
                         radiusEvents.add(anEvent);
                     }
                 }
@@ -107,6 +134,12 @@ public class DatabaseHelper {
         });
     }
 
+    /**
+     * this is methods used to add the event key string to a user's eventID list, this happens when
+     * the user host a event or join other events.
+     * @param evtKey
+     * @param mAuth
+     */
     public void updateUserEventList(final String evtKey, final FirebaseAuth mAuth) {
         databaseUsers.orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

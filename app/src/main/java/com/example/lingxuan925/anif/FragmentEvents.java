@@ -1,8 +1,6 @@
 package com.example.lingxuan925.anif;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -42,14 +40,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class FragmentEvents extends Fragment implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener {
 
     TextView textView;
     Button button;
-    Boolean onMap = true;
+    Boolean onMap = true, searching = false;
     MapView mMapView;
     private GoogleMap googleMap;
     private GoogleApiClient mGoogleApiClient;
@@ -158,7 +155,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        if (currentLatLng != null) refreshRadiusList();
+        if (currentLatLng != null && !searching) refreshRadiusList();
     }
 
     @Override
@@ -262,11 +259,30 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     }
 
     public void refreshRadiusList() {
+        System.out.println(currentLatLng);
         dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     dbHelper.fetchEventsWithinRadius(googleMap, currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void refreshRadiusListAfterSearch(final LatLng searchLatLng) {
+        searching = true;
+        System.out.println(searchLatLng);
+        dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    dbHelper.fetchEventsWithinRadius(googleMap, searchLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
                 }
             }
 
