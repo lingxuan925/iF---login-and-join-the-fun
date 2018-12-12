@@ -54,7 +54,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
     private TextView user_email;
     ImageView profile_pic;
     Dialog myDialog;
-    DatabaseReference databaseRef;
+    DatabaseHelper dbHelper;
 
     public FragmentUser() {
         // Required empty public constructor
@@ -87,7 +87,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         listView.setAdapter(adapter);
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser current_user = mAuth.getCurrentUser();
-        databaseRef = FirebaseDatabase.getInstance().getReference("Users");
+        dbHelper = new DatabaseHelper();
         logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
 
@@ -108,13 +108,14 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
             }
         };
 
-        databaseRef.addValueEventListener(new ValueEventListener() {
+        dbHelper.getDatabaseUsers().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     if (ds.getKey().equals(cur_user_key)) {
                         name.setText(ds.getValue(AppUser.class).getName());
                         whatsup.setText(ds.getValue(AppUser.class).getWhatsup());
+                        profile_pic.setImageURI(Uri.parse(ds.getValue(AppUser.class).getImageUri()));
                     }
                 }
             }
@@ -221,7 +222,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
 
     public void updateNickname(String newNickName) {
         try {
-            databaseRef.child(mAuth.getCurrentUser().getUid()).child("name").setValue(newNickName);
+            dbHelper.getDatabaseUsers().child(mAuth.getCurrentUser().getUid()).child("name").setValue(newNickName);
             name.setText(newNickName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -235,6 +236,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
             final Uri resultUri = UCrop.getOutput(data);
             profile_pic.setColorFilter(Color.TRANSPARENT);
             profile_pic.setImageURI(resultUri);
+            dbHelper.updateUser("imageUri", resultUri.toString(), mAuth);
         } else if (resultCode == UCrop.RESULT_ERROR) {
             final Throwable cropError = UCrop.getError(data);
             Toast.makeText(getActivity(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
