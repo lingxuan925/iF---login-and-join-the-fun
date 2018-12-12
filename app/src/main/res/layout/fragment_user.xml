@@ -26,10 +26,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:tint="@color/darkGrey"
-            app:srcCompat="@drawable/default_avatar"
-            app:civ_border_width="2dp"
-            app:civ_border_color="#FF000000"/>
+            android:src="@drawable/default_avatar2" />
 
         <LinearLayout
             android:layout_width="0dp"
