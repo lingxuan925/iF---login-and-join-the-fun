@@ -1,6 +1,5 @@
 package com.example.lingxuan925.anif;
 
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,16 +10,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -44,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
     private int PLACE_AUTOCOMPLETE_REQUEST_CODE_2 = 2;
     Intent searchIntent;
     TextView pickLocationButton;
-    ImageView searchButton;
     Place newAddedPlace;
     FirebaseAuth mAuth;
     private DatabaseHelper dbHelper;
     boolean onMap = true;
+    AlertDialog dialog;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -80,13 +76,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
-        searchButton = mToolbar.findViewById(R.id.button_search);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(searchIntent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-            }
-        });
         try {
             searchIntent =
                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
@@ -96,132 +85,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (GooglePlayServicesNotAvailableException e) {
             //todo
         }
-        ImageView addButton = mToolbar.findViewById(R.id.button_add_event);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View view = View.inflate(v.getContext(), R.layout.add_event_page_layout, null);
-
-                final EditText eventNameText = view.findViewById(R.id.new_act_add_name);
-                eventNameText.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        eventNameText.setText("");
-                    }
-                });
-                eventNameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if(hasFocus)
-                        {
-                            eventNameText.callOnClick();
-                        }
-                    }
-                });
-
-
-                pickLocationButton = view.findViewById(R.id.new_act_choose_location);
-                pickLocationButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent locationIntent;
-                        try {
-                            locationIntent =
-                                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                                            .build(MainActivity.this);
-                            startActivityForResult(locationIntent, PLACE_AUTOCOMPLETE_REQUEST_CODE_2);
-                        } catch (GooglePlayServicesRepairableException e) {
-                            //todo
-                        } catch (GooglePlayServicesNotAvailableException e) {
-                            //todo
-                        }
-                    }
-                });
-
-                final EditText participantsNumText = view.findViewById(R.id.new_act_add_capacity);
-                participantsNumText.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        participantsNumText.setText("");
-                    }
-                });
-                participantsNumText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if(hasFocus)
-                        {
-                            participantsNumText.callOnClick();
-                        }
-                    }
-                });
-
-
-                final EditText descriptionText = view.findViewById(R.id.new_act_add_description);
-                descriptionText.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (descriptionText.getText().toString().equals("Enter brief description"))
-                            descriptionText.setText("");
-                    }
-                });
-                descriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if(hasFocus)
-                        {
-                            descriptionText.callOnClick();
-                        }
-                    }
-                });
-
-
-                final DatePicker datePicker = view.findViewById(R.id.new_act_date_picker);
-                final TimePicker timePicker = view.findViewById(R.id.new_act_time_picker);
-
-                final Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DATE);
-                int hour = calendar.get(Calendar.HOUR);
-                datePicker.init(year, month, day, null);
-
-                timePicker.setIs24HourView(true);
-                timePicker.setHour(hour);
-                timePicker.setMinute(0);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setView(view);
-                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                    int capacity = 10; //default capacity of 10 for event
-                    String name = eventNameText.getText().toString();
-                    if (!participantsNumText.getText().toString().isEmpty() && !participantsNumText.getText().toString().equals("Enter participants number")) capacity = Integer.parseInt(participantsNumText.getText().toString());
-                    calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
-                    String dateTime = formatter.format(calendar.getTime()).toString();
-                    String date = dateTime.split(" ")[0];
-                    String time = dateTime.split(" ")[1];
-                    String description = descriptionText.getText().toString();
-                    String location = pickLocationButton.getText().toString();
-                    LatLng latlng = new LatLng(37.419857, -122.078827);
-                    if (newAddedPlace != null) latlng = newAddedPlace.getLatLng();
-
-                    Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude);
-                    newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
-                    dbHelper.createEvent(newEvent, mAuth);
-                    }
-                });
-                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-                builder.create().show();
-            }
-        });
 
         initFragment();
         navigation = findViewById(R.id.navigation);
@@ -239,9 +102,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int i) {
-                if (i != 0)
-                    searchButton.setVisibility(View.GONE);
-                else searchButton.setVisibility(View.VISIBLE);
+                if (i != 0) onMap = false;
+                if (i == 0) onMap = true;
+                supportInvalidateOptionsMenu();
             }
 
             @Override
@@ -249,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        dialog = setUpAddEventDialog();
     }
 
     private void initFragment() {
@@ -259,6 +124,36 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(fragment1);
         fragments.add(fragment2);
         fragments.add(fragment3);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_search).setVisible(onMap);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_search) {
+            startActivityForResult(searchIntent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+            return true;
+        }
+
+        if (id == R.id.action_add) {
+            dialog.show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void onBackPressed() {
@@ -274,13 +169,12 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                if (onMap) {
-                    FragmentEvents events = (FragmentEvents) (getSupportFragmentManager()
-                            .findFragmentByTag("android:switcher:" + R.id.fragment_frame + ":0"));
-                    events.addMarker(place.getName().toString(), place.getLatLng());
-                    events.moveCamera(place.getLatLng(), 15);
-                    events.refreshRadiusListAfterSearch(place.getLatLng());
-                }
+                FragmentEvents events = (FragmentEvents) (getSupportFragmentManager()
+                        .findFragmentByTag("android:switcher:" + R.id.fragment_frame + ":0"));
+                events.addMarker(place.getName().toString(), place.getLatLng());
+                events.moveCamera(place.getLatLng(), 15);
+                events.refreshRadiusListAfterSearch(place.getLatLng());
+
 
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
@@ -298,5 +192,128 @@ public class MainActivity extends AppCompatActivity {
                 //TODO: you can get the place chosen by user from here
             }
         }
+    }
+
+    public AlertDialog setUpAddEventDialog(){
+        View view = View.inflate(this, R.layout.add_event_page_layout, null);
+
+        final EditText eventNameText = view.findViewById(R.id.new_act_add_name);
+        eventNameText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventNameText.setText("");
+            }
+        });
+        eventNameText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    eventNameText.callOnClick();
+                }
+            }
+        });
+
+
+        pickLocationButton = view.findViewById(R.id.new_act_choose_location);
+        pickLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent locationIntent;
+                try {
+                    locationIntent =
+                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                                    .build(MainActivity.this);
+                    startActivityForResult(locationIntent, PLACE_AUTOCOMPLETE_REQUEST_CODE_2);
+                } catch (GooglePlayServicesRepairableException e) {
+                    //todo
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    //todo
+                }
+            }
+        });
+
+        final EditText participantsNumText = view.findViewById(R.id.new_act_add_capacity);
+        participantsNumText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                participantsNumText.setText("");
+            }
+        });
+        participantsNumText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    participantsNumText.callOnClick();
+                }
+            }
+        });
+
+
+        final EditText descriptionText = view.findViewById(R.id.new_act_add_description);
+        descriptionText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (descriptionText.getText().toString().equals("Enter brief description"))
+                    descriptionText.setText("");
+            }
+        });
+        descriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    descriptionText.callOnClick();
+                }
+            }
+        });
+
+
+        final DatePicker datePicker = view.findViewById(R.id.new_act_date_picker);
+        final TimePicker timePicker = view.findViewById(R.id.new_act_time_picker);
+
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DATE);
+        int hour = calendar.get(Calendar.HOUR);
+        datePicker.init(year, month, day, null);
+
+        timePicker.setIs24HourView(true);
+        timePicker.setHour(hour);
+        timePicker.setMinute(0);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setView(view);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                int capacity = 10; //default capacity of 10 for event
+                String name = eventNameText.getText().toString();
+                if (!participantsNumText.getText().toString().isEmpty() && !participantsNumText.getText().toString().equals("Enter participants number"))
+                    capacity = Integer.parseInt(participantsNumText.getText().toString());
+                calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
+                String dateTime = formatter.format(calendar.getTime()).toString();
+                String date = dateTime.split(" ")[0];
+                String time = dateTime.split(" ")[1];
+                String description = descriptionText.getText().toString();
+                String location = pickLocationButton.getText().toString();
+                LatLng latlng = new LatLng(37.419857, -122.078827);
+                if (newAddedPlace != null) latlng = newAddedPlace.getLatLng();
+
+                Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude);
+                newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
+                dbHelper.createEvent(newEvent, mAuth);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
+        return dialog;
     }
 }

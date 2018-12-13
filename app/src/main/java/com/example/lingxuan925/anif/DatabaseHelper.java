@@ -1,5 +1,7 @@
 package com.example.lingxuan925.anif;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -103,7 +105,11 @@ public class DatabaseHelper {
                     eventLoc.setLatitude(anEvent.getLatitude());
                     eventLoc.setLongitude(anEvent.getLongitude());
                     if (currentLoc.distanceTo(eventLoc)/1000 < Integer.parseInt(radius)) {
-                        googleMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.event_flag_small)).position(new LatLng(anEvent.getLatitude(), anEvent.getLongitude())).title(anEvent.getName()).snippet(anEvent.getDescription()));
+                        googleMap.addMarker(new MarkerOptions()
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.event_flag))
+                                .position(new LatLng(anEvent.getLatitude(), anEvent.getLongitude()))
+                                .title(anEvent.getName())
+                                .snippet(anEvent.getDescription()));
                         radiusEvents.add(anEvent);
                     }
                 }

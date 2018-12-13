@@ -234,7 +234,6 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             final Uri resultUri = UCrop.getOutput(data);
-            profile_pic.setColorFilter(Color.TRANSPARENT);
             profile_pic.setImageURI(resultUri);
             dbHelper.updateUser("imageUri", resultUri.toString(), mAuth);
         } else if (resultCode == UCrop.RESULT_ERROR) {

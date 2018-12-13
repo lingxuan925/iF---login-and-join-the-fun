@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity = "center"
+    android:scrollbars="none"
     android:orientation="vertical">
 
     <LinearLayout
@@ -10,6 +11,19 @@
         android:gravity="center"
         android:focusableInTouchMode="true"
         android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:text="Add New Event"
+            android:textSize="31sp"
+            android:fontFamily="cursive"
+            android:gravity="center_horizontal|center_vertical"
+            android:textColor="@color/white"
+            android:background="@drawable/actionbar4"/>
 
         <EditText
             android:id="@+id/new_act_add_name"

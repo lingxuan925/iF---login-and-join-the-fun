@@ -1,6 +1,7 @@
 package com.example.lingxuan925.anif;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +59,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     FirebaseAuth mAuth;
     private DatabaseHelper dbHelper;
     private LatLng currentLatLng;
+    AlertDialog dialog;
 
     public FragmentEvents() {
         // Required empty public constructor
@@ -145,8 +148,19 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     return;
                 }
                 googleMap.setMyLocationEnabled(true);
+                googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+                        dialog.setTitle(marker.getTitle());
+                        dialog.show();
+                        return true;
+                    }
+                });
             }
         });
+
+        dialog = setUpMarkerPopupView();
 
         return view;
     }
@@ -291,5 +305,27 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
             }
         });
+    }
+
+    public AlertDialog setUpMarkerPopupView(){
+        View view = View.inflate(getContext(), R.layout.marker_popup_layout, null);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(view);
+        builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //TODO: Join in this event
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
+        return dialog;
     }
 }

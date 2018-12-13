@@ -16,23 +16,6 @@
         android:background="@drawable/actionbar4"
         android:fitsSystemWindows="true">
 
-        <ImageView
-            android:id="@+id/button_add_event"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="end"
-            android:scaleX="0.5"
-            android:scaleY="0.5"
-            android:background="@drawable/add_icon" />
-
-        <ImageView
-            android:id="@+id/button_search"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:scaleX="0.5"
-            android:scaleY="0.5"
-            android:layout_gravity="end"
-            android:src="@drawable/ic_search_black_24dp" />
 
         <TextView
             android:id="@+id/title_toolbar"
@@ -41,10 +24,10 @@
             android:layout_gravity="center"
             android:fontFamily="cursive"
             android:gravity="bottom"
-            android:paddingBottom="15dp"
+            android:paddingBottom="13dp"
             android:text="Map"
             android:textColor="@color/white"
-            android:textSize="25sp"
+            android:textSize="31sp"
             android:textStyle="bold" />
 
     </android.support.v7.widget.Toolbar>
