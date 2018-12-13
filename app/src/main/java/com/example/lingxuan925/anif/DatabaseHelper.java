@@ -129,6 +129,7 @@ public class DatabaseHelper {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()) {
                     user.getEventIDs().add("placeholder");
+                    user.setImageUri("https://firebasestorage.googleapis.com/v0/b/iffirebaseproject-9e0ec.appspot.com/o/image%2Fdefault_avatar2.png?alt=media&token=9d9f088d-ff92-4ea5-a75c-d04cb5b3087f");
                     databaseUsers.child(mAuth.getCurrentUser().getUid()).setValue(user);
                 }
             }

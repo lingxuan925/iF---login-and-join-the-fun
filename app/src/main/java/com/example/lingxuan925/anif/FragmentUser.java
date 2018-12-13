@@ -2,46 +2,38 @@ package com.example.lingxuan925.anif;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.fxn.pix.Pix;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -52,6 +44,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
     FirebaseAuth.AuthStateListener mAuthListener;
     private TextView name, whatsup;
     private TextView user_email;
+    private StorageReference storageReference;
     ImageView profile_pic;
     Dialog myDialog;
     DatabaseHelper dbHelper;
@@ -79,7 +72,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_user, container, false);
+        final View view = inflater.inflate(R.layout.fragment_user, container, false);
 
         OptionAdapter adapter = new OptionAdapter(view.getContext(), R.layout.option_item, optionList);
         ListView listView = view.findViewById(R.id.options_list);
@@ -88,6 +81,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser current_user = mAuth.getCurrentUser();
         dbHelper = new DatabaseHelper();
+        storageReference = FirebaseStorage.getInstance().getReference();
         logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
 
@@ -115,7 +109,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                     if (ds.getKey().equals(cur_user_key)) {
                         name.setText(ds.getValue(AppUser.class).getName());
                         whatsup.setText(ds.getValue(AppUser.class).getWhatsup());
-                        profile_pic.setImageURI(Uri.parse(ds.getValue(AppUser.class).getImageUri()));
+                        Glide.with(view).load(ds.getValue(AppUser.class).getImageUri()).into(profile_pic);
                     }
                 }
             }
@@ -234,8 +228,25 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             final Uri resultUri = UCrop.getOutput(data);
-            profile_pic.setImageURI(resultUri);
-            dbHelper.updateUser("imageUri", resultUri.toString(), mAuth);
+            String imagePath = "/image/"+mAuth.getCurrentUser().getUid()+"/"+resultUri.getLastPathSegment();
+            final StorageReference aStorageRef = storageReference.child(imagePath);
+
+            aStorageRef.putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    aStorageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            dbHelper.updateUser("imageUri", uri.toString(), mAuth);
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         } else if (resultCode == UCrop.RESULT_ERROR) {
             final Throwable cropError = UCrop.getError(data);
             Toast.makeText(getActivity(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
