@@ -111,14 +111,14 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     listView.setOnItemClickListener(FragmentEvents.this);
                     listView.setAdapter(adapter);
 
-                    refreshRadiusList();
+                    if (currentLatLng != null) refreshRadiusList();
                     onMap = false;
                 } else {
                     layoutList.startAnimation(mHiddenAction);
                     layoutList.setVisibility(View.GONE);
                     layoutMap.startAnimation(mShowAction);
                     layoutMap.setVisibility(View.VISIBLE);
-                    refreshRadiusList();
+                    if (currentLatLng != null) refreshRadiusList();
                     onMap = true;
                 }
             }
