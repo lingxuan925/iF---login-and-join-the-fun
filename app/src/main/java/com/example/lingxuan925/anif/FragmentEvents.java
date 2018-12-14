@@ -63,6 +63,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     private LatLng currentLatLng;
     AlertDialog dialog;
     LocationManager locationManager;
+    private String clickedEventKey;
 
     public FragmentEvents() {
         // Required empty public constructor
@@ -167,6 +168,8 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     public boolean onMarkerClick(Marker marker) {
                         Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
                         dialog.setTitle(marker.getTitle());
+                        clickedEventKey = marker.getId();
+                        System.out.println(clickedEventKey);
                         dialog.show();
                         return true;
                     }
@@ -346,7 +349,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                //TODO: Join in this event
+//                dbHelper.updateUserEventList();
             }
         });
 

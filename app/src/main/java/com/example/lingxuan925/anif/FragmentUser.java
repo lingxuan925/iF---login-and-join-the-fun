@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.fxn.pix.Pix;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -109,7 +110,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                     if (ds.getKey().equals(cur_user_key)) {
                         name.setText(ds.getValue(AppUser.class).getName());
                         whatsup.setText(ds.getValue(AppUser.class).getWhatsup());
-                        Glide.with(view).load(ds.getValue(AppUser.class).getImageUri()).into(profile_pic);
+                        Glide.with(getContext()).load(ds.getValue(AppUser.class).getImageUri()).apply(new RequestOptions().fitCenter()).into(profile_pic);
                     }
                 }
             }
@@ -228,7 +229,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             final Uri resultUri = UCrop.getOutput(data);
-            String imagePath = "/image/"+mAuth.getCurrentUser().getUid()+"/"+resultUri.getLastPathSegment();
+            String imagePath = "/image/"+mAuth.getCurrentUser().getUid()+"/"+mAuth.getCurrentUser().getUid()+".png";
             final StorageReference aStorageRef = storageReference.child(imagePath);
 
             aStorageRef.putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {

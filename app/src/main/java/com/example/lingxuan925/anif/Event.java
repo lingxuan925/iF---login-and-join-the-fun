@@ -3,7 +3,7 @@ package com.example.lingxuan925.anif;
 import java.util.ArrayList;
 
 class Event {
-    private String name, location, description, hostname, date, startTime;
+    private String id, name, location, description, hostname, date, startTime;
     private int numLimit, curCnt; //number of participants limit
     private double latitude, longitude;
     private ArrayList<String> participants;
@@ -109,5 +109,13 @@ class Event {
 
     public void setStartTime(String startTime) {
         this.startTime = startTime;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

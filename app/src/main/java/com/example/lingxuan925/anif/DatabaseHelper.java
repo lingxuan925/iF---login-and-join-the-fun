@@ -39,6 +39,7 @@ public class DatabaseHelper {
      */
     public void createEvent(Event evt, FirebaseAuth mAuth) {
         String key = databaseEvents.push().getKey();
+        evt.setId(key);
         updateUserEventList(key, mAuth);
         databaseEvents.child(key).setValue(evt);
     }
@@ -109,7 +110,7 @@ public class DatabaseHelper {
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.event_flag))
                                 .position(new LatLng(anEvent.getLatitude(), anEvent.getLongitude()))
                                 .title(anEvent.getName())
-                                .snippet(anEvent.getDescription()));
+                                .snippet(anEvent.getId()));
                         radiusEvents.add(anEvent);
                     }
                 }
