@@ -39,14 +39,12 @@
         android:layout_height="0dp"
         android:layout_weight="6" />
 
-
-
         <Button
             android:id="@+id/signup"
             android:layout_width="100dp"
             android:layout_height="0dp"
             android:layout_weight="6"
-            android:background="@drawable/button"
+            android:background="@drawable/textview_background_border"
             android:layout_gravity="center"
             android:text="Login in"
             style="?android:attr/borderlessButtonStyle" />

@@ -1,9 +1,11 @@
 package com.example.lingxuan925.anif;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,6 +27,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -52,7 +55,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     MapView mMapView;
     private GoogleMap googleMap;
     private GoogleApiClient mGoogleApiClient;
-    boolean isConnected = false;
     Marker marker;
     private ArrayList<Event> radiusList;
     private EventsAdapter adapter;
@@ -60,6 +62,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     private DatabaseHelper dbHelper;
     private LatLng currentLatLng;
     AlertDialog dialog;
+    LocationManager locationManager;
 
     public FragmentEvents() {
         // Required empty public constructor
@@ -67,6 +70,8 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
@@ -95,13 +100,22 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                 Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, -1.0f);
         mHiddenAction.setDuration(500);
 
-        FloatingActionButton btnTransfer = view.findViewById(R.id.fab);
+        final FloatingActionButton btnMyLocation = view.findViewById(R.id.current_location);
+        btnMyLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToCurrentLocation();
+            }
+        });
+
+        FloatingActionButton btnTransfer = view.findViewById(R.id.change_view);
         btnTransfer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (onMap) {
                     layoutMap.startAnimation(mHiddenAction);
                     layoutMap.setVisibility(View.GONE);
+                    btnMyLocation.hide();
                     layoutList.startAnimation(mShowAction);
                     layoutList.setVisibility(View.VISIBLE);
 
@@ -116,6 +130,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                 } else {
                     layoutList.startAnimation(mHiddenAction);
                     layoutList.setVisibility(View.GONE);
+                    btnMyLocation.show();
                     layoutMap.startAnimation(mShowAction);
                     layoutMap.setVisibility(View.VISIBLE);
                     if (currentLatLng != null) refreshRadiusList();
@@ -147,7 +162,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                             Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
                     return;
                 }
-                googleMap.setMyLocationEnabled(true);
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
@@ -206,8 +220,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
             } else {
                 if (ActivityCompat.checkSelfPermission(getActivity(),
                         android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    googleMap.setMyLocationEnabled(true);
-                    if (isConnected)
+                    if (mGoogleApiClient.isConnected())
                         LocationServices.getFusedLocationProviderClient(getActivity())
                                 .getLastLocation()
                                 .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
@@ -220,6 +233,15 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                                         }
                                     }
                                 });
+                    googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+                            Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
+                            dialog.setTitle(marker.getTitle());
+                            dialog.show();
+                            return true;
+                        }
+                    });
                 }
             }
         }
@@ -227,21 +249,8 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        isConnected = true;
-        if (ActivityCompat.checkSelfPermission(getActivity(),
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            LocationServices.getFusedLocationProviderClient(getActivity())
-                    .getLastLocation()
-                    .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-                                currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                moveCamera(currentLatLng, 14);
-                                refreshRadiusList();
-                            }
-                        }
-                    });
+        Toast.makeText(getContext(), "Google Api Client is connected", Toast.LENGTH_SHORT).show();
+        goToCurrentLocation();
     }
 
     @Override
@@ -259,7 +268,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
-    public void addMarker(String title, LatLng latLng){
+    public void addMarker(String title, LatLng latLng) {
         if (marker != null)
             marker.remove();
         marker = googleMap.addMarker(new MarkerOptions()
@@ -272,11 +281,34 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
     }
 
+    public void goToCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(getActivity(),
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            FusedLocationProviderClient mLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            mLocationClient.getLastLocation()
+                    .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                Toast.makeText(getContext(), "Moving camera to current location...", Toast.LENGTH_SHORT).show();
+                                currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                moveCamera(currentLatLng, 14);
+                                refreshRadiusList();
+                            } else {
+                                Toast.makeText(getContext(), "" + locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)+" "+mGoogleApiClient.isConnected(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Please turn on location and try again", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+    }
+
     public void refreshRadiusList() {
         System.out.println(currentLatLng);
         dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Toast.makeText(getContext(), "Fetching events by within radius...", Toast.LENGTH_SHORT).show();
                 if (dataSnapshot.exists()) {
                     dbHelper.fetchEventsWithinRadius(googleMap, currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
                 }
@@ -307,7 +339,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         });
     }
 
-    public AlertDialog setUpMarkerPopupView(){
+    public AlertDialog setUpMarkerPopupView() {
         View view = View.inflate(getContext(), R.layout.marker_popup_layout, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);
