@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.TextPaint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,12 +29,18 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -47,7 +54,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class FragmentEvents extends Fragment implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener {
+        GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener, LocationListener {
 
     TextView textView;
     Button button;
@@ -63,6 +70,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     private LatLng currentLatLng;
     AlertDialog dialog;
     LocationManager locationManager;
+    private LocationCallback mLocationCallback;
     private String clickedEventKey;
     private View viewJoin;
 
@@ -181,6 +189,21 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         });
 
 
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    Toast.makeText(getContext(), Double.toString(location.getLatitude()), Toast.LENGTH_SHORT).show();
+                    currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
+                }
+            }
+
+            ;
+        };
+
         return view;
     }
 
@@ -241,7 +264,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(Marker marker) {
-                            Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
                             dialog.setTitle(marker.getTitle());
                             dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
                             dialog.show();
@@ -262,7 +284,11 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     @Override
     public void onConnectionSuspended(int i) {
         Toast.makeText(getActivity(), "Connection Suspended", Toast.LENGTH_SHORT).show();
-    }
+
+        mGoogleApiClient.disconnect();
+        mGoogleApiClient.connect();
+        }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -282,6 +308,15 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                 .title(title));
     }
 
+    public void addMarker(String title, LatLng latLng, BitmapDescriptor icon) {
+        if (marker != null)
+            marker.remove();
+        marker = googleMap.addMarker(new MarkerOptions()
+                .icon(icon)
+                .position(latLng)
+                .title(title));
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -290,7 +325,12 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     public void goToCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(getActivity(),
                 android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationRequest locationRequest = createLocationRequest();
+
             FusedLocationProviderClient mLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+            mLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, null);
+
             mLocationClient.getLastLocation()
                     .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                         @Override
@@ -301,8 +341,10 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                                 moveCamera(currentLatLng, 14);
                                 refreshRadiusList();
                             } else {
-                                Toast.makeText(getContext(), "" + locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)+" "+mGoogleApiClient.isConnected(), Toast.LENGTH_SHORT).show();
-                                Toast.makeText(getContext(), "Please turn on location and try again", Toast.LENGTH_SHORT).show();
+                                if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+                                    Toast.makeText(getContext(), "Please turn on location service and try again", Toast.LENGTH_SHORT).show();
+                                else if (currentLatLng != null)
+                                    moveCamera(currentLatLng, 14);
                             }
                         }
                     });
@@ -314,7 +356,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Toast.makeText(getContext(), "Fetching events by within radius...", Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(getContext(), "Fetching events by within radius...", Toast.LENGTH_SHORT).show();
                 if (dataSnapshot.exists()) {
                     dbHelper.fetchEventsWithinRadius(googleMap, currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
                 }
@@ -325,6 +367,8 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
             }
         });
+        if (currentLatLng != null)
+            addMarker("Current Location", currentLatLng, BitmapDescriptorFactory.fromResource(R.drawable.ic_action_search));
     }
 
     public void refreshRadiusListAfterSearch(final LatLng searchLatLng) {
@@ -367,5 +411,18 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         AlertDialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
         return dialog;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    protected LocationRequest createLocationRequest() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(120000);
+        mLocationRequest.setFastestInterval(30000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        return mLocationRequest;
     }
 }
