@@ -424,27 +424,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-//                int capacity = 10; //default capacity of 10 for event
-//                String name = eventNameText.getText().toString();
-//                if (name.isEmpty() || name.equals("Enter event name")) {
-//                    hasErrors = true;
-//                    eventNameText.setError("Event title is required!");
-//                }
-//                if (!participantsNumText.getText().toString().isEmpty() && !participantsNumText.getText().toString().equals("Enter participants number"))
-//                    capacity = Integer.parseInt(participantsNumText.getText().toString());
-//                calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
-//                String dateTime = formatter.format(calendar.getTime()).toString();
-//                String date = dateTime.split(" ")[0];
-//                String time = dateTime.split(" ")[1];
-//                String description = descriptionText.getText().toString();
-//                String location = pickLocationButton.getText().toString();
-//                LatLng latlng = new LatLng(37.419857, -122.078827);
-//                if (newAddedPlace != null) latlng = newAddedPlace.getLatLng();
-//                Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude, eventType.getSelectedItem().toString());
-//                newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
-//                newEvent.setCurCnt(newEvent.getParticipants().size());
-//                dbHelper.createEvent(newEvent, mAuth);
+                
             }
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
