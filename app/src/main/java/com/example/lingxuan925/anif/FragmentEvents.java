@@ -295,7 +295,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
         mGoogleApiClient.disconnect();
         mGoogleApiClient.connect();
-        }
+    }
 
 
     @Override
@@ -327,7 +327,10 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        clickedEventKey = radiusList.get(position).getId();
+        dialog.setTitle(radiusList.get(position).getName());
+        dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
+        dialog.show();
     }
 
     public void goToCurrentLocation() {
@@ -360,7 +363,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     }
 
     public void refreshRadiusList() {
-        System.out.println(currentLatLng);
         dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -375,8 +377,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
             }
         });
-        if (currentLatLng != null)
-            addMarker("Current Location", currentLatLng, BitmapDescriptorFactory.fromResource(R.drawable.ic_action_search));
     }
 
     public void refreshRadiusListAfterSearch(final LatLng searchLatLng) {
@@ -402,9 +402,9 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         builder.setView(viewJoin);
         builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialogInterface, int which) {
                 if (!clickedEventKey.equals("")) {
-                    dbHelper.updateUserEventList(clickedEventKey, mAuth);
+                    dbHelper.addOrDeleteEvent(clickedEventKey, mAuth, dialog);
                     dbHelper.updateEventParticipantList(clickedEventKey, mAuth);
                 }
             }
@@ -412,7 +412,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialogInterface, int which) {
 
             }
         });
