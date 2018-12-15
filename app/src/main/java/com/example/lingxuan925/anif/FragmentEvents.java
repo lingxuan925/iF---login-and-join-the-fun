@@ -53,15 +53,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class FragmentEvents extends Fragment implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, AdapterView.OnItemClickListener, LocationListener {
+public class FragmentEvents extends Fragment implements AdapterView.OnItemClickListener, LocationListener {
 
     TextView textView;
     Button button;
     Boolean onMap = true, searching = false;
     MapView mMapView;
     private GoogleMap googleMap;
-    private GoogleApiClient mGoogleApiClient;
     Marker marker;
     private ArrayList<Event> radiusList;
     private EventsAdapter adapter;
@@ -83,13 +81,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         viewJoin = View.inflate(getContext(), R.layout.marker_popup_layout, null);
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
 
         final View view = inflater.inflate(R.layout.fragment_events, container, false);
         final LinearLayout layoutMap = view.findViewById(R.id.map);
@@ -155,7 +146,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
-            mGoogleApiClient.connect();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -207,6 +197,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         return view;
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -248,7 +239,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
             } else {
                 if (ActivityCompat.checkSelfPermission(getActivity(),
                         android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    if (mGoogleApiClient.isConnected())
+                    if (((MainActivity)getActivity()).mGoogleApiClient.isConnected())
                         LocationServices.getFusedLocationProviderClient(getActivity())
                                 .getLastLocation()
                                 .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
@@ -275,33 +266,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         }
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        if (!mGoogleApiClient.isConnected()){
-            mGoogleApiClient.connect();
-        }
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Toast.makeText(getContext(), "Google Api Client is connected", Toast.LENGTH_SHORT).show();
-        goToCurrentLocation();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Toast.makeText(getActivity(), "Connection Suspended", Toast.LENGTH_SHORT).show();
-
-        mGoogleApiClient.disconnect();
-        mGoogleApiClient.connect();
-    }
-
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(getActivity(), "Connection Failed", Toast.LENGTH_SHORT).show();
-    }
 
     public void moveCamera(LatLng latlng, int zoom) {
         CameraPosition cameraPosition = new CameraPosition.Builder().target(latlng).zoom(zoom).build();
@@ -336,6 +300,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     public void goToCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(getActivity(),
                 android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
             LocationRequest locationRequest = createLocationRequest();
 
             FusedLocationProviderClient mLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -347,7 +312,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                         @Override
                         public void onSuccess(Location location) {
                             if (location != null) {
-                                Toast.makeText(getContext(), "Moving camera to current location...", Toast.LENGTH_SHORT).show();
                                 currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 moveCamera(currentLatLng, 14);
                                 refreshRadiusList();
@@ -356,6 +320,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                                     Toast.makeText(getContext(), "Please turn on location service and try again", Toast.LENGTH_SHORT).show();
                                 else if (currentLatLng != null)
                                     moveCamera(currentLatLng, 14);
+                                //Toast.makeText(getContext(), "奇怪", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

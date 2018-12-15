@@ -199,7 +199,7 @@ public class DatabaseHelper {
         });
     }
 
-    public void addOrDeleteEvent(final String evtKey, final FirebaseAuth mAuth, android.support.v7.app.AlertDialog dialog) {
+    public void addOrDeleteEvent(final String evtKey, final FirebaseAuth mAuth, final android.support.v7.app.AlertDialog dialog) {
         databaseUsers.orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

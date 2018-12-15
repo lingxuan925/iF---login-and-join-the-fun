@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -17,10 +18,14 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.LatLng;
@@ -31,7 +36,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private List<Fragment> fragments;
     private BottomNavigationView navigation;
@@ -45,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     boolean onMap = true;
     AlertDialog dialog;
+    GoogleApiClient mGoogleApiClient;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -72,6 +79,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
         dbHelper = new DatabaseHelper();
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
 
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -114,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         dialog = setUpAddEventDialog();
+
+        mGoogleApiClient.connect();
     }
 
     private void initFragment() {
@@ -125,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(fragment2);
         fragments.add(fragment3);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -194,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public AlertDialog setUpAddEventDialog(){
+    public AlertDialog setUpAddEventDialog() {
         View view = View.inflate(this, R.layout.add_event_page_layout, null);
 
         final EditText eventNameText = view.findViewById(R.id.new_act_add_name);
@@ -316,5 +332,41 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
         return dialog;
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Toast.makeText(this, "Google Api Client is connected", Toast.LENGTH_SHORT).show();
+        FragmentEvents fragment = (FragmentEvents)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.fragment_frame + ":0");
+        fragment.goToCurrentLocation();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(this, "Connection Suspended", Toast.LENGTH_SHORT).show();
+    }
+
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    @Override
+    public void onResume(){
+        mGoogleApiClient.connect();
+        super.onResume();
     }
 }
