@@ -216,7 +216,10 @@ public class DatabaseHelper {
                     location.setText(dataSnapshot.getValue(Event.class).getLocation());
                     description.setText(dataSnapshot.getValue(Event.class).getDescription());
                     ArrayList<String> eventParticipants = dataSnapshot.getValue(Event.class).getParticipants();
+                    System.out.println(eventParticipants.get(0));
+                    System.out.println(mAuth.getCurrentUser().getUid());
                     if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
 //                        eventParticipants.add(mAuth.getCurrentUser().getUid().toString());
 //                        databaseEvents.child(evtKey).child("participants").setValue(eventParticipants);
 //                        databaseEvents.child(evtKey).child("curCnt").setValue(eventParticipants.size());
