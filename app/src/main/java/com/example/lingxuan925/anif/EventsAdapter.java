@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class EventsAdapter extends ArrayAdapter<Event> {
 
     CardView cardView;
-    TextView textViewTitle, textViewLocation, textViewStartTime, textViewMonth, textViewDay, textViewHost, textViewDesc, textViewCurrent, textViewMax;
+    TextView textViewTitle, textViewLocation, textViewStartTime, textViewMonth, textViewDay, textViewHost, textViewDesc, textViewCurrent, textViewMax, textViewType;
     private ArrayList<Event> eventList;
 
     public EventsAdapter(Context context, int resource, ArrayList<Event> events) {
@@ -39,6 +39,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         textViewHost = convertView.findViewById(R.id.tViewOwner);
         textViewCurrent = convertView.findViewById(R.id.tViewCurrent);
         textViewMax = convertView.findViewById(R.id.tViewMaxCapacity);
+        textViewType = convertView.findViewById(R.id.tEventType);
 
         textViewTitle.setText(eventList.get(position).getName());
         textViewMax.setText(Integer.toString(eventList.get(position).getNumLimit()));
@@ -48,6 +49,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         textViewDay.setText(eventList.get(position).getDate().split("-")[2]);
         textViewLocation.setText(eventList.get(position).getLocation());
         textViewDesc.setText(eventList.get(position).getDescription());
+        textViewType.setText(eventList.get(position).getType());
 
         return convertView;
     }

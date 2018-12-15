@@ -103,6 +103,17 @@
                     android:text="Max Capacity"
                     android:textColor="@android:color/darker_gray"
                     android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tEventType"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:fontFamily="sans-serif-light"
+                    android:text="Type"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="15sp" />
+
             </LinearLayout>
 
             <LinearLayout

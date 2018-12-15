@@ -168,9 +168,16 @@ public class DatabaseHelper {
                     Event event = dataSnapshot.getValue(Event.class);
                     if (!event.getParticipants().contains(mAuth.getCurrentUser().getUid())) {
                         event.getParticipants().add(mAuth.getCurrentUser().getUid());
+                    } else {
+                        event.getParticipants().remove(mAuth.getCurrentUser().getUid());
                     }
                     databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
                     databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
+                    if (event.getParticipants().isEmpty()) dataSnapshot.getRef().setValue(null);
+                    /**
+                     * deletes event object from database only if the number of participants for that events is zero
+                     * and it is the host who is the last one that unjoined
+                     */
                 }
             }
 
@@ -188,6 +195,7 @@ public class DatabaseHelper {
                 if (dataSnapshot.exists()) {
                     AppUser curUser = dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class);
                     if (!curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().add(evtKey);
+                    else curUser.getEventIDs().remove(evtKey);
                     databaseUsers.child(mAuth.getCurrentUser().getUid()).child("eventIDs").setValue(curUser.getEventIDs());
                 }
             }
@@ -236,15 +244,22 @@ public class DatabaseHelper {
         final TextView hostname = view.findViewById(R.id.holder_name);
         final TextView location = view.findViewById(R.id.address_text);
         final TextView description = view.findViewById(R.id.description);
+        final TextView eventType = view.findViewById(R.id.event_type);
         databaseEvents.child(evtKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     location.setText(dataSnapshot.getValue(Event.class).getLocation());
                     description.setText(dataSnapshot.getValue(Event.class).getDescription());
+                    eventType.setText(dataSnapshot.getValue(Event.class).getType());
                     ArrayList<String> eventParticipants = dataSnapshot.getValue(Event.class).getParticipants();
 
-                    if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("unjoin");
+                    if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) {
+                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("unjoin");
+                        if (eventParticipants.size() > 1 && mAuth.getCurrentUser().getUid().equals(dataSnapshot.getValue(Event.class).getHostname())) {
+                            dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                        } else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    }
                     else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("join");
 
                     databaseUsers.child(dataSnapshot.getValue(Event.class).getHostname()).addListenerForSingleValueEvent(new ValueEventListener() {

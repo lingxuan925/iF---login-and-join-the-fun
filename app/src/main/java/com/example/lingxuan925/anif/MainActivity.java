@@ -14,8 +14,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -282,6 +285,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
+        final Spinner eventType = view.findViewById(R.id.event_type);
+        // Spinner Drop down elements
+        List<String> categories = new ArrayList<>();
+        categories.add("Entertainment");
+        categories.add("Foodies");
+        categories.add("Sports");
+        categories.add("Travel");
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        eventType.setAdapter(dataAdapter);
 
         final DatePicker datePicker = view.findViewById(R.id.new_act_date_picker);
         final TimePicker timePicker = view.findViewById(R.id.new_act_time_picker);
@@ -316,8 +334,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 String location = pickLocationButton.getText().toString();
                 LatLng latlng = new LatLng(37.419857, -122.078827);
                 if (newAddedPlace != null) latlng = newAddedPlace.getLatLng();
-
-                Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude);
+                Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude, eventType.getSelectedItem().toString());
                 newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
                 newEvent.setCurCnt(newEvent.getParticipants().size());
                 dbHelper.createEvent(newEvent, mAuth);

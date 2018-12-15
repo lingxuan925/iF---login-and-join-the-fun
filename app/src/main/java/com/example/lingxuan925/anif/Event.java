@@ -3,15 +3,16 @@ package com.example.lingxuan925.anif;
 import java.util.ArrayList;
 
 class Event {
-    private String id, name, location, description, hostname, date, startTime;
+    private String id, name, location, description, hostname, date, startTime, type;
     private int numLimit, curCnt; //number of participants limit
     private double latitude, longitude;
     private ArrayList<String> participants;
 
     public Event() {}
 
-    public Event(String name, String location, String description, String hostname, String date, String startTime, int numLimit, double latitude, double longitude){
+    public Event(String name, String location, String description, String hostname, String date, String startTime, int numLimit, double latitude, double longitude, String type){
         this.name = name;
+        this.type = type;
         this.location = location;
         this.description = description;
         this.hostname = hostname;
@@ -117,5 +118,13 @@ class Event {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

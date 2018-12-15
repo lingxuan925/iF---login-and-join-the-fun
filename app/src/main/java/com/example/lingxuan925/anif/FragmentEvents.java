@@ -70,7 +70,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
     LocationManager locationManager;
     private LocationCallback mLocationCallback;
     private String clickedEventKey;
-    private View viewJoin;
+    View viewJoin;
 
     public FragmentEvents() {
         // Required empty public constructor
@@ -167,17 +167,18 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-                        Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
-                        dialog.setTitle(marker.getTitle());
-                        clickedEventKey = marker.getSnippet();
-                        dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
-                        dialog.show();
+                        if (marker.getTitle().equals("Current Location")) marker.showInfoWindow();
+                        else {
+                            dialog.setTitle(marker.getTitle());
+                            clickedEventKey = marker.getSnippet();
+                            dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
+                            dialog.show();
+                        }
                         return true;
                     }
                 });
             }
         });
-
 
         mLocationCallback = new LocationCallback() {
             @Override
@@ -255,9 +256,12 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(Marker marker) {
-                            dialog.setTitle(marker.getTitle());
-                            dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
-                            dialog.show();
+                            if (marker.getTitle().equals("Current Location")) marker.showInfoWindow();
+                            else {
+                                dialog.setTitle(marker.getTitle());
+                                dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
+                                dialog.show();
+                            }
                             return true;
                         }
                     });
@@ -369,7 +373,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
                 if (!clickedEventKey.equals("")) {
-                    dbHelper.addOrDeleteEvent(clickedEventKey, mAuth, dialog);
+                    dbHelper.updateUserEventList(clickedEventKey, mAuth);
                     dbHelper.updateEventParticipantList(clickedEventKey, mAuth);
                 }
             }
