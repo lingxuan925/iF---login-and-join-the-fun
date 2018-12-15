@@ -319,7 +319,10 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        clickedEventKey = radiusList.get(position).getId();
+        dialog.setTitle(radiusList.get(position).getName());
+        dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
+        dialog.show();
     }
 
     public void goToCurrentLocation() {
@@ -352,7 +355,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     }
 
     public void refreshRadiusList() {
-        System.out.println(currentLatLng);
         dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
