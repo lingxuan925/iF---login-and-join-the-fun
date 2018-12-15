@@ -276,6 +276,14 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        if (!mGoogleApiClient.isConnected()){
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
     public void onConnected(@Nullable Bundle bundle) {
         Toast.makeText(getContext(), "Google Api Client is connected", Toast.LENGTH_SHORT).show();
         goToCurrentLocation();
