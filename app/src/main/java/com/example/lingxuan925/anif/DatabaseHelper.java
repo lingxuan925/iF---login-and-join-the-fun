@@ -173,6 +173,11 @@ public class DatabaseHelper {
                     }
                     databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
                     databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
+                    if (event.getParticipants().isEmpty()) dataSnapshot.getRef().setValue(null);
+                    /**
+                     * deletes event object from database only if the number of participants for that events is zero
+                     * and it is the host who is the last one that unjoined
+                     */
                 }
             }
 
@@ -223,7 +228,12 @@ public class DatabaseHelper {
                     description.setText(dataSnapshot.getValue(Event.class).getDescription());
                     ArrayList<String> eventParticipants = dataSnapshot.getValue(Event.class).getParticipants();
 
-                    if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("unjoin");
+                    if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) {
+                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("unjoin");
+                        if (eventParticipants.size() > 1 && mAuth.getCurrentUser().getUid().equals(dataSnapshot.getValue(Event.class).getHostname())) {
+                            dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                        } else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    }
                     else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("join");
 
                     databaseUsers.child(dataSnapshot.getValue(Event.class).getHostname()).addListenerForSingleValueEvent(new ValueEventListener() {
