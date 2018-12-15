@@ -220,12 +220,14 @@ public class DatabaseHelper {
         final TextView hostname = view.findViewById(R.id.holder_name);
         final TextView location = view.findViewById(R.id.address_text);
         final TextView description = view.findViewById(R.id.description);
+        final TextView eventType = view.findViewById(R.id.event_type);
         databaseEvents.child(evtKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     location.setText(dataSnapshot.getValue(Event.class).getLocation());
                     description.setText(dataSnapshot.getValue(Event.class).getDescription());
+                    eventType.setText(dataSnapshot.getValue(Event.class).getType());
                     ArrayList<String> eventParticipants = dataSnapshot.getValue(Event.class).getParticipants();
 
                     if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) {
