@@ -188,7 +188,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
             }
         });
 
-
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
