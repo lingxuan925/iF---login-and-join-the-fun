@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -34,9 +35,11 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -52,9 +55,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     Place newAddedPlace;
     FirebaseAuth mAuth;
     private DatabaseHelper dbHelper;
-    boolean onMap = true;
+    boolean onMap = true, hasErrors = false;
     AlertDialog dialog;
     GoogleApiClient mGoogleApiClient;
+    private EditText eventNameText, participantsNumText, descriptionText;
+    private Spinner eventType;
+    private DatePicker datePicker;
+    private TimePicker timePicker;
+    private Calendar calendar;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -132,6 +140,102 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
         dialog = setUpAddEventDialog();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        hasErrors = false;
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        Calendar cal = Calendar.getInstance();
+                        cal.add(Calendar.DATE, 0);
+                        String yesterday = dateFormat.format(cal.getTime()).toString();
+                        // Check if your condition is met, Dismiss once everything is OK.
+                        String name = eventNameText.getText().toString();
+                        String location = pickLocationButton.getText().toString();
+                        String rvsp = participantsNumText.getText().toString();
+                        String description = descriptionText.getText().toString();
+                        LatLng latlng = new LatLng(37.419857, -122.078827);
+                        int capacity = 10;
+                        calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
+                        String dateTime = formatter.format(calendar.getTime()).toString();
+                        String date = dateTime.split(" ")[0];
+                        String time = dateTime.split(" ")[1];
+
+                        if (name.isEmpty() || name.equals("Enter event name")) {
+                            hasErrors = true;
+                            eventNameText.setError("Event title is required!");
+                        }
+                        if (location.isEmpty() || location.equals("Choose a location")) {
+                            hasErrors = true;
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+                            builder1.setTitle("Warning");
+                            builder1.setMessage("Location is required!");
+                            builder1.setCancelable(true);
+                            builder1.setNeutralButton(android.R.string.ok,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                            AlertDialog alert11 = builder1.create();
+                            alert11.show();
+                        } else {
+                            if (newAddedPlace != null) latlng = newAddedPlace.getLatLng();
+                        }
+                        if (rvsp.isEmpty() || rvsp.equals("Enter participants number")) {
+                            hasErrors = true;
+                            participantsNumText.setError("RSVP capacity is required!");
+                        } else {
+                            try {
+                                capacity = Integer.parseInt(rvsp);
+                                if (capacity <= 1) {
+                                    hasErrors = true;
+                                    participantsNumText.setError("RSVP capacity must be greater than 1!");
+                                }
+                            } catch (NumberFormatException e) {
+                                participantsNumText.setError("RSVP capacity must be a number!");
+                            }
+                        }
+                        if (description.isEmpty() || description.equals("Enter brief description")) {
+                            hasErrors = true;
+                            descriptionText.setError("Description is required!");
+                        }
+                        if (date.compareTo(yesterday) < 0) {
+                            hasErrors = true;
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(MainActivity.this);
+                            builder1.setTitle("Warning");
+                            builder1.setMessage("Event date is before today's date!");
+                            builder1.setCancelable(true);
+                            builder1.setNeutralButton(android.R.string.ok,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                            AlertDialog alert11 = builder1.create();
+                            alert11.show();
+                        }
+
+                        if (!hasErrors) {
+                            Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude, eventType.getSelectedItem().toString());
+                            newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
+                            newEvent.setCurCnt(newEvent.getParticipants().size());
+                            dbHelper.createEvent(newEvent, mAuth);
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
 
         mGoogleApiClient.connect();
     }
@@ -216,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public AlertDialog setUpAddEventDialog() {
         View view = View.inflate(this, R.layout.add_event_page_layout, null);
 
-        final EditText eventNameText = view.findViewById(R.id.new_act_add_name);
+        eventNameText = view.findViewById(R.id.new_act_add_name);
         eventNameText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -251,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
-        final EditText participantsNumText = view.findViewById(R.id.new_act_add_capacity);
+        participantsNumText = view.findViewById(R.id.new_act_add_capacity);
         participantsNumText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -268,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
 
-        final EditText descriptionText = view.findViewById(R.id.new_act_add_description);
+        descriptionText = view.findViewById(R.id.new_act_add_description);
         descriptionText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -285,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
-        final Spinner eventType = view.findViewById(R.id.event_type);
+        eventType = view.findViewById(R.id.event_type);
         // Spinner Drop down elements
         List<String> categories = new ArrayList<>();
         categories.add("Entertainment");
@@ -301,10 +405,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         // attaching data adapter to spinner
         eventType.setAdapter(dataAdapter);
 
-        final DatePicker datePicker = view.findViewById(R.id.new_act_date_picker);
-        final TimePicker timePicker = view.findViewById(R.id.new_act_time_picker);
+        datePicker = view.findViewById(R.id.new_act_date_picker);
+        timePicker = view.findViewById(R.id.new_act_time_picker);
 
-        final Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DATE);
@@ -320,24 +424,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                int capacity = 10; //default capacity of 10 for event
-                String name = eventNameText.getText().toString();
-                if (!participantsNumText.getText().toString().isEmpty() && !participantsNumText.getText().toString().equals("Enter participants number"))
-                    capacity = Integer.parseInt(participantsNumText.getText().toString());
-                calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
-                String dateTime = formatter.format(calendar.getTime()).toString();
-                String date = dateTime.split(" ")[0];
-                String time = dateTime.split(" ")[1];
-                String description = descriptionText.getText().toString();
-                String location = pickLocationButton.getText().toString();
-                LatLng latlng = new LatLng(37.419857, -122.078827);
-                if (newAddedPlace != null) latlng = newAddedPlace.getLatLng();
-                Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude, eventType.getSelectedItem().toString());
-                newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
-                newEvent.setCurCnt(newEvent.getParticipants().size());
-                dbHelper.createEvent(newEvent, mAuth);
+//                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//                int capacity = 10; //default capacity of 10 for event
+//                String name = eventNameText.getText().toString();
+//                if (name.isEmpty() || name.equals("Enter event name")) {
+//                    hasErrors = true;
+//                    eventNameText.setError("Event title is required!");
+//                }
+//                if (!participantsNumText.getText().toString().isEmpty() && !participantsNumText.getText().toString().equals("Enter participants number"))
+//                    capacity = Integer.parseInt(participantsNumText.getText().toString());
+//                calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getHour(), timePicker.getMinute());
+//                String dateTime = formatter.format(calendar.getTime()).toString();
+//                String date = dateTime.split(" ")[0];
+//                String time = dateTime.split(" ")[1];
+//                String description = descriptionText.getText().toString();
+//                String location = pickLocationButton.getText().toString();
+//                LatLng latlng = new LatLng(37.419857, -122.078827);
+//                if (newAddedPlace != null) latlng = newAddedPlace.getLatLng();
+//                Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude, eventType.getSelectedItem().toString());
+//                newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
+//                newEvent.setCurCnt(newEvent.getParticipants().size());
+//                dbHelper.createEvent(newEvent, mAuth);
             }
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

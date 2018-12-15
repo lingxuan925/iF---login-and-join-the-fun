@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -115,8 +116,23 @@ public class DatabaseHelper {
                     eventLoc.setLatitude(anEvent.getLatitude());
                     eventLoc.setLongitude(anEvent.getLongitude());
                     if (currentLoc.distanceTo(eventLoc)/1000 < Integer.parseInt(radius)) {
+                        BitmapDescriptor bitmapDescriptor = null;
+                        switch (anEvent.getType()) {
+                            case "Entertainment":
+                                bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.event_flag_entertainment);
+                                break;
+                            case "Sports":
+                                bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.event_flag_sport);
+                                break;
+                            case "Travel":
+                                bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.event_flag_travel);
+                                break;
+                            case "Foodies":
+                                bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.event_flag_food);
+                                break;
+                        }
                         googleMap.addMarker(new MarkerOptions()
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.event_flag))
+                                .icon(bitmapDescriptor)
                                 .position(new LatLng(anEvent.getLatitude(), anEvent.getLongitude()))
                                 .title(anEvent.getName())
                                 .snippet(anEvent.getId()));
