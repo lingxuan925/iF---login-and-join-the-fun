@@ -177,11 +177,13 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                 googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-                        Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
-                        dialog.setTitle(marker.getTitle());
-                        clickedEventKey = marker.getSnippet();
-                        dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
-                        dialog.show();
+                        if (marker.getTitle().equals("Current Location")) marker.showInfoWindow();
+                        else {
+                            dialog.setTitle(marker.getTitle());
+                            clickedEventKey = marker.getSnippet();
+                            dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
+                            dialog.show();
+                        }
                         return true;
                     }
                 });
@@ -263,9 +265,12 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(Marker marker) {
-                            dialog.setTitle(marker.getTitle());
-                            dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
-                            dialog.show();
+                            if (marker.getTitle().equals("Current Location")) marker.showInfoWindow();
+                            else {
+                                dialog.setTitle(marker.getTitle());
+                                dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
+                                dialog.show();
+                            }
                             return true;
                         }
                     });
