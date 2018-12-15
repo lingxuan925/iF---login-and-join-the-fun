@@ -2,28 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/event_list"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <Button
-        android:id="@+id/to_map"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="hahaha" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="lalala" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="lol" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello world!" />
-
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+        <ListView
+            android:id="@+id/radius_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@drawable/divider"
+            android:dividerHeight="1dp"
+            android:drawSelectorOnTop="true"
+            android:scrollbars="none" />
 
 </LinearLayout>

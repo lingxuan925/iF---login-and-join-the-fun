@@ -25,11 +25,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class Signup extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
@@ -38,7 +33,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
     GoogleApiClient googleApiClient;
     private static final int REQ_CODE = 9001;
     FirebaseAuth.AuthStateListener mAuthListener;
-    DatabaseReference databaseUsers;
+    DatabaseHelper dbHelper;
 
     @Override
     protected void onStart() {
@@ -53,9 +48,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         setContentView(R.layout.activity_signup);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
-        System.out.println(databaseUsers);
+        dbHelper = new DatabaseHelper();
 
         signIn = findViewById(R.id.signingmail);
         signIn.setOnClickListener(this);
@@ -101,8 +94,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         if (result.isSuccess()) {
             GoogleSignInAccount account = result.getSignInAccount();
             firebaseAuthWithGoogle(account);
-        }
-        else {
+        } else {
             Toast.makeText(Signup.this, "Authentication Error!", Toast.LENGTH_LONG).show();
         }
     }
@@ -117,22 +109,8 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             final FirebaseUser curUser = mAuth.getCurrentUser();
-                            databaseUsers.orderByChild("email").equalTo(curUser.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (!dataSnapshot.exists()) {
-                                        AppUser aUser = new AppUser();
-                                        aUser.setEmail(curUser.getEmail());
-                                        aUser.setName(curUser.getDisplayName());
-                                        databaseUsers.child(curUser.getUid()).setValue(aUser);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
+                            AppUser aUser = new AppUser(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getEmail(), "yyyy-mm-dd", "What's up", "50", "image uri");
+                            dbHelper.createUser(aUser, mAuth);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());

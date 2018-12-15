@@ -1,6 +1,7 @@
 package com.example.lingxuan925.anif;
 
 public class Option {
+
     private String name;
     private int imageId;
 
@@ -11,6 +12,10 @@ public class Option {
 
     public String getName(){
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getImageId(){

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.lingxuan925.anif">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -9,7 +13,9 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:largeHeap="true" >
+
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
         <meta-data
@@ -33,6 +39,23 @@
             android:name=".Signup"
             android:label="@string/title_activity_gmail_signup"
             android:theme="@style/AppTheme.signIn" />
+        <activity
+            android:name=".Details"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".UpcomingEvents"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".Settings"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+
     </application>
 
 </manifest>
