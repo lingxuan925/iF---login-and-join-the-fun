@@ -1,6 +1,8 @@
 package com.example.lingxuan925.anif;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -19,6 +21,9 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
     ListView listView;
     EventsAdapter adapter;
     DatabaseHelper dbHelper;
+    AlertDialog dialog;
+    View viewJoin;
+    private String clickedEventKey;
 
     public UpcomingEvents() {
 
@@ -35,6 +40,7 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
         setContentView(R.layout.upcoming_events);
         dbHelper = new DatabaseHelper();
         upcomingEvents = new ArrayList<>();
+        viewJoin = View.inflate(this, R.layout.marker_popup_layout, null);
         Toolbar mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
@@ -45,6 +51,8 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
                 finish();
             }
         });
+
+        dialog = setUpMarkerPopupView();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -57,6 +65,33 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        clickedEventKey = upcomingEvents.get(position).getId();
+        dialog.setTitle(upcomingEvents.get(position).getName());
+        dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
+        dialog.show();
+    }
 
+    public AlertDialog setUpMarkerPopupView() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(viewJoin);
+        builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+                if (!clickedEventKey.equals("")) {
+                    dbHelper.updateUserEventList(clickedEventKey, mAuth);
+                    dbHelper.updateEventParticipantList(clickedEventKey, mAuth);
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int which) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_dialog_background);
+        return dialog;
     }
 }

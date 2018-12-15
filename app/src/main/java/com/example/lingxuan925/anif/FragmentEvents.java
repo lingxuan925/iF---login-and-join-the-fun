@@ -72,7 +72,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     LocationManager locationManager;
     private LocationCallback mLocationCallback;
     private String clickedEventKey;
-    private View viewJoin;
+    View viewJoin;
 
     public FragmentEvents() {
         // Required empty public constructor
