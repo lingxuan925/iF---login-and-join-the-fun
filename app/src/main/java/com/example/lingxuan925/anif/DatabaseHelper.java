@@ -123,6 +123,9 @@ public class DatabaseHelper {
                         radiusEvents.add(anEvent);
                     }
                 }
+                if (currentLatLng != null) googleMap.addMarker(new MarkerOptions().title("Current Location")
+                        .position(currentLatLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_search)));
                 adapter.refreshList(radiusEvents);
             }
 
@@ -196,6 +199,30 @@ public class DatabaseHelper {
         });
     }
 
+    public void addOrDeleteEvent(final String evtKey, final FirebaseAuth mAuth, android.support.v7.app.AlertDialog dialog) {
+        databaseUsers.orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    AppUser curUser = dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class);
+                    if (dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).getText().equals("join")) {
+                        if (!curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().add(evtKey);
+                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("unjoin");
+                    } else {
+                        if (curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().remove(evtKey);
+                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("join");
+                    }
+                    databaseUsers.child(mAuth.getCurrentUser().getUid()).child("eventIDs").setValue(curUser.getEventIDs());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void updateUser(String key, String val, FirebaseAuth mAuth) {
         databaseUsers.child(mAuth.getCurrentUser().getUid()).child(key).setValue(val);
     }
@@ -217,8 +244,8 @@ public class DatabaseHelper {
                     description.setText(dataSnapshot.getValue(Event.class).getDescription());
                     ArrayList<String> eventParticipants = dataSnapshot.getValue(Event.class).getParticipants();
 
-                    if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                    else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("unjoin");
+                    else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("join");
 
                     databaseUsers.child(dataSnapshot.getValue(Event.class).getHostname()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override

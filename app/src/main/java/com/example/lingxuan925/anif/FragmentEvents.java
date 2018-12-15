@@ -287,7 +287,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
         mGoogleApiClient.disconnect();
         mGoogleApiClient.connect();
-        }
+    }
 
 
     @Override
@@ -369,8 +369,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
             }
         });
-        if (currentLatLng != null)
-            addMarker("Current Location", currentLatLng, BitmapDescriptorFactory.fromResource(R.drawable.ic_action_search));
     }
 
     public void refreshRadiusListAfterSearch(final LatLng searchLatLng) {
@@ -396,9 +394,9 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
         builder.setView(viewJoin);
         builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialogInterface, int which) {
                 if (!clickedEventKey.equals("")) {
-                    dbHelper.updateUserEventList(clickedEventKey, mAuth);
+                    dbHelper.addOrDeleteEvent(clickedEventKey, mAuth, dialog);
                     dbHelper.updateEventParticipantList(clickedEventKey, mAuth);
                 }
             }
@@ -406,7 +404,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
 
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialogInterface, int which) {
 
             }
         });
