@@ -303,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude);
                 newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
+                newEvent.setCurCnt(newEvent.getParticipants().size());
                 dbHelper.createEvent(newEvent, mAuth);
             }
         });

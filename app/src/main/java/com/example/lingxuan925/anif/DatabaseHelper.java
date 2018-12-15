@@ -1,9 +1,15 @@
 package com.example.lingxuan925.anif;
 
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -15,10 +21,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DatabaseHelper {
 
@@ -148,13 +157,34 @@ public class DatabaseHelper {
      * @param evtKey
      * @param mAuth
      */
+    public void updateEventParticipantList(final String evtKey, final FirebaseAuth mAuth) {
+        databaseEvents.child(evtKey).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Event event = dataSnapshot.getValue(Event.class);
+                    if (!event.getParticipants().contains(mAuth.getCurrentUser().getUid())) {
+                        event.getParticipants().add(mAuth.getCurrentUser().getUid());
+                    }
+                    databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
+                    databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void updateUserEventList(final String evtKey, final FirebaseAuth mAuth) {
         databaseUsers.orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     AppUser curUser = dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class);
-                    curUser.getEventIDs().add(evtKey);
+                    if (!curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().add(evtKey);
                     databaseUsers.child(mAuth.getCurrentUser().getUid()).child("eventIDs").setValue(curUser.getEventIDs());
                 }
             }
@@ -172,5 +202,44 @@ public class DatabaseHelper {
 
     public DatabaseReference getDatabaseUsers() {
         return databaseUsers;
+    }
+
+    public void fetchSingleEventByID(String evtKey, final View view, final FirebaseAuth mAuth, final android.support.v7.app.AlertDialog dialog) {
+        final CircleImageView profileImage = view.findViewById(R.id.avatar);
+        final TextView hostname = view.findViewById(R.id.holder_name);
+        final TextView location = view.findViewById(R.id.address_text);
+        final TextView description = view.findViewById(R.id.description);
+        databaseEvents.child(evtKey).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    location.setText(dataSnapshot.getValue(Event.class).getLocation());
+                    description.setText(dataSnapshot.getValue(Event.class).getDescription());
+                    ArrayList<String> eventParticipants = dataSnapshot.getValue(Event.class).getParticipants();
+                    if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+//                        eventParticipants.add(mAuth.getCurrentUser().getUid().toString());
+//                        databaseEvents.child(evtKey).child("participants").setValue(eventParticipants);
+//                        databaseEvents.child(evtKey).child("curCnt").setValue(eventParticipants.size());
+
+                    databaseUsers.child(dataSnapshot.getValue(Event.class).getHostname()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Glide.with(view.getContext()).load(dataSnapshot.getValue(AppUser.class).getImageUri()).apply(new RequestOptions().fitCenter()).into(profileImage);
+                            hostname.setText(dataSnapshot.getValue(AppUser.class).getName());
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

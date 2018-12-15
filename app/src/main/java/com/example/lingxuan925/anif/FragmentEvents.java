@@ -64,6 +64,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     AlertDialog dialog;
     LocationManager locationManager;
     private String clickedEventKey;
+    private View viewJoin;
 
     public FragmentEvents() {
         // Required empty public constructor
@@ -73,7 +74,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                              @Nullable Bundle savedInstanceState) {
 
         locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-
+        viewJoin = View.inflate(getContext(), R.layout.marker_popup_layout, null);
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                     .addConnectionCallbacks(this)
@@ -82,7 +83,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     .build();
         }
 
-        View view = inflater.inflate(R.layout.fragment_events, container, false);
+        final View view = inflater.inflate(R.layout.fragment_events, container, false);
         final LinearLayout layoutMap = view.findViewById(R.id.map);
         final LinearLayout layoutList = view.findViewById(R.id.event_list);
         layoutList.setVisibility(View.GONE);
@@ -151,6 +152,8 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
             e.printStackTrace();
         }
 
+        dialog = setUpMarkerPopupView();
+
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mMap) {
@@ -168,8 +171,8 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                     public boolean onMarkerClick(Marker marker) {
                         Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
                         dialog.setTitle(marker.getTitle());
-                        clickedEventKey = marker.getId();
-                        System.out.println(clickedEventKey);
+                        clickedEventKey = marker.getSnippet();
+                        dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
                         dialog.show();
                         return true;
                     }
@@ -177,7 +180,6 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
             }
         });
 
-        dialog = setUpMarkerPopupView();
 
         return view;
     }
@@ -241,6 +243,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
                         public boolean onMarkerClick(Marker marker) {
                             Toast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_SHORT).show();
                             dialog.setTitle(marker.getTitle());
+                            dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
                             dialog.show();
                             return true;
                         }
@@ -343,13 +346,15 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
     }
 
     public AlertDialog setUpMarkerPopupView() {
-        View view = View.inflate(getContext(), R.layout.marker_popup_layout, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setView(view);
+        builder.setView(viewJoin);
         builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                dbHelper.updateUserEventList();
+                if (!clickedEventKey.equals("")) {
+                    dbHelper.updateUserEventList(clickedEventKey, mAuth);
+                    dbHelper.updateEventParticipantList(clickedEventKey, mAuth);
+                }
             }
         });
 

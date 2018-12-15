@@ -21,6 +21,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.fxn.pix.Pix;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +42,7 @@ import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
 
-public class FragmentUser extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class FragmentUser extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener, GoogleApiClient.OnConnectionFailedListener {
     private ArrayList<Option> optionList = new ArrayList<>();
     private Button logoutBtn;
     FirebaseAuth mAuth;
@@ -49,6 +53,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
     ImageView profile_pic;
     Dialog myDialog;
     DatabaseHelper dbHelper;
+    GoogleApiClient googleApiClient;
 
     public FragmentUser() {
         // Required empty public constructor
@@ -74,6 +79,16 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_user, container, false);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        googleApiClient = new GoogleApiClient.Builder(getContext())
+                .enableAutoManage(getActivity(), this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
 
         OptionAdapter adapter = new OptionAdapter(view.getContext(), R.layout.option_item, optionList);
         ListView listView = view.findViewById(R.id.options_list);
@@ -140,7 +155,11 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.signout) mAuth.signOut();
+        if (view.getId() == R.id.signout) {
+            Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(status -> {
+                mAuth.signOut();
+            });
+        }
     }
 
     @Override
@@ -266,5 +285,10 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                     .withAspectRatio(16, 9)
                     .start(getContext(), this, UCrop.REQUEST_CROP);
         }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }
