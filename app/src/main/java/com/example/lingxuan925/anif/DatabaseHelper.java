@@ -168,6 +168,8 @@ public class DatabaseHelper {
                     Event event = dataSnapshot.getValue(Event.class);
                     if (!event.getParticipants().contains(mAuth.getCurrentUser().getUid())) {
                         event.getParticipants().add(mAuth.getCurrentUser().getUid());
+                    } else {
+                        event.getParticipants().remove(mAuth.getCurrentUser().getUid());
                     }
                     databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
                     databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
@@ -188,30 +190,7 @@ public class DatabaseHelper {
                 if (dataSnapshot.exists()) {
                     AppUser curUser = dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class);
                     if (!curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().add(evtKey);
-                    databaseUsers.child(mAuth.getCurrentUser().getUid()).child("eventIDs").setValue(curUser.getEventIDs());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    public void addOrDeleteEvent(final String evtKey, final FirebaseAuth mAuth, android.support.v7.app.AlertDialog dialog) {
-        databaseUsers.orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    AppUser curUser = dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class);
-                    if (dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).getText().equals("join")) {
-                        if (!curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().add(evtKey);
-                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("unjoin");
-                    } else {
-                        if (curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().remove(evtKey);
-                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("join");
-                    }
+                    else curUser.getEventIDs().remove(evtKey);
                     databaseUsers.child(mAuth.getCurrentUser().getUid()).child("eventIDs").setValue(curUser.getEventIDs());
                 }
             }

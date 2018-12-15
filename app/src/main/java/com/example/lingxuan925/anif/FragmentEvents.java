@@ -396,7 +396,7 @@ public class FragmentEvents extends Fragment implements GoogleApiClient.Connecti
             @Override
             public void onClick(DialogInterface dialogInterface, int which) {
                 if (!clickedEventKey.equals("")) {
-                    dbHelper.addOrDeleteEvent(clickedEventKey, mAuth, dialog);
+                    dbHelper.updateUserEventList(clickedEventKey, mAuth);
                     dbHelper.updateEventParticipantList(clickedEventKey, mAuth);
                 }
             }
