@@ -276,7 +276,7 @@ public class DatabaseHelper {
         });
     }
 
-    public void fetchEventsByType(final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> eventsByType, String type) {
+    public void fetchEventsByType(final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> eventsByType, String type, String radius) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1);
         Date tomorrow = calendar.getTime();
@@ -288,7 +288,13 @@ public class DatabaseHelper {
                 eventsByType.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Event anEvent = ds.getValue(Event.class);
-                    if (anEvent.getType().equals(type)) eventsByType.add(anEvent);
+                    Location currentLoc = new Location("current location");
+                    currentLoc.setLatitude(FragmentEvents.currentLatLng.latitude);
+                    currentLoc.setLongitude(FragmentEvents.currentLatLng.longitude);
+                    Location eventLoc = new Location("event location");
+                    eventLoc.setLatitude(anEvent.getLatitude());
+                    eventLoc.setLongitude(anEvent.getLongitude());
+                    if (anEvent.getType().equals(type) && currentLoc.distanceTo(eventLoc)/1000 < Integer.parseInt(radius)) eventsByType.add(anEvent);
                 }
                 adapter.refreshList(eventsByType);
             }

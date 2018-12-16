@@ -65,7 +65,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
     private EventsAdapter adapter;
     FirebaseAuth mAuth;
     private DatabaseHelper dbHelper;
-    private LatLng currentLatLng;
+    static LatLng currentLatLng;
     AlertDialog dialog;
     LocationManager locationManager;
     private LocationCallback mLocationCallback;
@@ -399,5 +399,9 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
         mLocationRequest.setFastestInterval(30000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
         return mLocationRequest;
+    }
+
+    public LatLng getCurrentLatLng() {
+        return currentLatLng;
     }
 }

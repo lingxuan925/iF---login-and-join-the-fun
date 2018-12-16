@@ -2,6 +2,7 @@ package com.example.lingxuan925.anif;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +13,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -69,7 +73,19 @@ public class CategoryDetail extends AppCompatActivity implements AdapterView.OnI
         adapter = new EventsAdapter(CategoryDetail.this, 0, eventsByType);
         listView.setOnItemClickListener(CategoryDetail.this);
         listView.setAdapter(adapter);
-        dbHelper.fetchEventsByType(mAuth, adapter, eventsByType, title.getText().toString());
+        dbHelper.getDatabaseUsers().child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    dbHelper.fetchEventsByType(mAuth, adapter, eventsByType, title.getText().toString(), dataSnapshot.getValue(AppUser.class).getRadius());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         Button backButton = mToolbar.findViewById(R.id.button_back);
         backButton.setOnClickListener(new View.OnClickListener() {
