@@ -347,7 +347,6 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
 
     public void refreshRadiusListAfterSearch(final LatLng searchLatLng) {
         searching = true;
-        System.out.println(searchLatLng);
         dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

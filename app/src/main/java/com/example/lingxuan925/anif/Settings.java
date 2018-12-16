@@ -100,7 +100,7 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
         View mView = getLayoutInflater().inflate(R.layout.change_radius, null);
 
-        final EditText birthdateField = mView.findViewById(R.id.change_radius);
+        final EditText radiusField = mView.findViewById(R.id.change_radius);
         Button mSave = mView.findViewById(R.id.btn_save);
         mBuilder.setView(mView);
 
@@ -110,14 +110,24 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
         mSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String editRadius = birthdateField.getText().toString();
+                String editRadius = radiusField.getText().toString();
+
                 if (!editRadius.isEmpty()){
-                    dbHelper.updateUser("radius", editRadius, mAuth);
-                    optionList.get(pos).setName(editRadius);
-                    adapter.refreshList(optionList);
-                    dialog.dismiss();
-                } else{
-                    Toast.makeText(getApplicationContext(), "field is empty!", Toast.LENGTH_SHORT).show();
+                    try {
+                        int radius = Integer.parseInt(editRadius);
+                        if (radius < 0 || radius > 500) {
+                            radiusField.setError("Radius must be between 0 and 500!");
+                        } else {
+                            dbHelper.updateUser("radius", editRadius, mAuth);
+                            optionList.get(pos).setName(editRadius);
+                            adapter.refreshList(optionList);
+                            dialog.dismiss();
+                        }
+                    } catch (NumberFormatException e) {
+                        radiusField.setError("Radius must be a number!");
+                    }
+                } else {
+                    radiusField.setError("Radius is required!");
                 }
             }
         });

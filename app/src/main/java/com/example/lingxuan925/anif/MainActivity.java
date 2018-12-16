@@ -415,9 +415,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         } else {
                             try {
                                 capacity = Integer.parseInt(rvsp);
-                                if (capacity <= 1) {
+                                if (capacity <= 1 || capacity > 100) {
                                     hasErrors = true;
-                                    participantsNumText.setError("RSVP capacity must be greater than 1!");
+                                    participantsNumText.setError("RSVP capacity must be between 2 and 100!");
                                 }
                             } catch (NumberFormatException e) {
                                 participantsNumText.setError("RSVP capacity must be a number!");
