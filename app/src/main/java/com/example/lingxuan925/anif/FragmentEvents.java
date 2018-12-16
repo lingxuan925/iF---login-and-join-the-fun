@@ -126,7 +126,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                     listView.setOnItemClickListener(FragmentEvents.this);
                     listView.setAdapter(adapter);
 
-                    if (currentLatLng != null) refreshRadiusList();
+                    if (currentLatLng != null && !searching) refreshRadiusList();
                     onMap = false;
                 } else {
                     layoutList.startAnimation(mHiddenAction);
@@ -134,7 +134,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                     btnMyLocation.show();
                     layoutMap.startAnimation(mShowAction);
                     layoutMap.setVisibility(View.VISIBLE);
-                    if (currentLatLng != null) refreshRadiusList();
+                    if (currentLatLng != null && !searching) refreshRadiusList();
                     onMap = true;
                 }
             }
@@ -247,6 +247,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                                         if (location != null) {
                                             currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                             moveCamera(currentLatLng, 14);
+                                            searching = false;
                                             refreshRadiusList();
                                         }
                                     }
@@ -317,6 +318,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                             if (location != null) {
                                 currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 moveCamera(currentLatLng, 14);
+                                searching = false;
                                 refreshRadiusList();
                             } else {
                                 if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
