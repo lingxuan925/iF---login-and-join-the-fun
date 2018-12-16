@@ -186,10 +186,8 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                 if (locationResult == null) {
                     return;
                 }
-                for (Location location : locationResult.getLocations()) {
-                    Toast.makeText(getContext(), Double.toString(location.getLatitude()), Toast.LENGTH_SHORT).show();
-                    currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude());
-                }
+                currentLatLng = new LatLng(locationResult.getLastLocation().getLatitude()
+                        , locationResult.getLastLocation().getLongitude());
             }
 
             ;
@@ -240,7 +238,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
             } else {
                 if (ActivityCompat.checkSelfPermission(getActivity(),
                         android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    if (((MainActivity)getActivity()).mGoogleApiClient.isConnected())
+                    if (((MainActivity) getActivity()).mGoogleApiClient.isConnected())
                         LocationServices.getFusedLocationProviderClient(getActivity())
                                 .getLastLocation()
                                 .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
@@ -256,7 +254,8 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(Marker marker) {
-                            if (marker.getTitle().equals("Current Location")) marker.showInfoWindow();
+                            if (marker.getTitle().equals("Current Location"))
+                                marker.showInfoWindow();
                             else {
                                 dialog.setTitle(marker.getTitle());
                                 dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
@@ -324,7 +323,6 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                                     Toast.makeText(getContext(), "Please turn on location service and try again", Toast.LENGTH_SHORT).show();
                                 else if (currentLatLng != null)
                                     moveCamera(currentLatLng, 14);
-                                //Toast.makeText(getContext(), "奇怪", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -335,7 +333,6 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
         dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //   Toast.makeText(getContext(), "Fetching events by within radius...", Toast.LENGTH_SHORT).show();
                 if (dataSnapshot.exists()) {
                     dbHelper.fetchEventsWithinRadius(googleMap, currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
                 }

@@ -440,7 +440,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Toast.makeText(this, "Google Api Client is connected", Toast.LENGTH_SHORT).show();
         FragmentEvents fragment = (FragmentEvents)getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.fragment_frame + ":0");
         fragment.goToCurrentLocation();
     }
