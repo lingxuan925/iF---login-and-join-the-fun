@@ -223,30 +223,6 @@ public class DatabaseHelper {
         });
     }
 
-    public void addOrDeleteEvent(final String evtKey, final FirebaseAuth mAuth, final android.support.v7.app.AlertDialog dialog) {
-        databaseUsers.orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    AppUser curUser = dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class);
-                    if (dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).getText().equals("join")) {
-                        if (!curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().add(evtKey);
-                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("unjoin");
-                    } else {
-                        if (curUser.getEventIDs().contains(evtKey)) curUser.getEventIDs().remove(evtKey);
-                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("join");
-                    }
-                    databaseUsers.child(mAuth.getCurrentUser().getUid()).child("eventIDs").setValue(curUser.getEventIDs());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
     public void updateUser(String key, String val, FirebaseAuth mAuth) {
         databaseUsers.child(mAuth.getCurrentUser().getUid()).child(key).setValue(val);
     }
@@ -295,6 +271,30 @@ public class DatabaseHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void fetchEventsByType(final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> eventsByType, String type) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        Date tomorrow = calendar.getTime();
+        String modifiedDate = new SimpleDateFormat("yyyy-MM-dd").format(tomorrow);
+
+        databaseEvents.orderByChild("date").startAt(modifiedDate).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                eventsByType.clear();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Event anEvent = ds.getValue(Event.class);
+                    if (anEvent.getType().equals(type)) eventsByType.add(anEvent);
+                }
+                adapter.refreshList(eventsByType);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });

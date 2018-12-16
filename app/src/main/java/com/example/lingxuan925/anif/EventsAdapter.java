@@ -1,6 +1,7 @@
 package com.example.lingxuan925.anif;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import android.support.v7.widget.CardView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -50,6 +55,20 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         textViewLocation.setText(eventList.get(position).getLocation());
         textViewDesc.setText(eventList.get(position).getDescription());
         textViewType.setText(eventList.get(position).getType());
+        DatabaseHelper dbHelper = new DatabaseHelper();
+        dbHelper.getDatabaseUsers().child(eventList.get(position).getHostname()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    textViewHost.setText(dataSnapshot.getValue(AppUser.class).getName());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         return convertView;
     }

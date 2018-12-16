@@ -48,6 +48,7 @@ public class FragmentCategory extends Fragment {
             layoutList.get(i).setOnClickListener(v -> {
                 currentCategory = v.getId();
                 startActivity(categoryDetail);
+                getActivity().overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             });
         }
 
