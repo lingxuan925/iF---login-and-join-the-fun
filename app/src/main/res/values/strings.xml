@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">iF</string>
     <string name="title_events">events</string>
-    <string name="title_friends">friends</string>
+    <string name="title_category">category</string>
     <string name="title_profile">me</string>
 
     <!-- TODO: Remove or change this placeholder text -->

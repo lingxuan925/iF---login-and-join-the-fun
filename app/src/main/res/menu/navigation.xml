@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/navigation_events"
-        android:icon="@drawable/anchor"
+        android:icon="@drawable/icon_compass"
         android:title="@string/title_events" />
 
     <item
         android:id="@+id/navigation_friends"
-        android:icon="@drawable/friends"
-        android:title="@string/title_friends" />
+        android:icon="@drawable/icon_pointer"
+        android:title="@string/title_category" />
 
     <item
         android:id="@+id/navigation_user"
-        android:icon="@drawable/user"
+        android:icon="@drawable/icon_user"
         android:title="@string/title_profile" />
 
 </menu>

@@ -175,19 +175,16 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                 showChangeNamePopUp(view);
                 break;
             case "Upcoming events":
-                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 showUpcomingEvents();
                 break;
             case "Details":
-                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 editDetails();
                 break;
             case "Settings":
-                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
                 showSettings();
                 break;
             case "Feedback":
-                Toast.makeText(getActivity(), text + " is clicked!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getContext(), Feedback.class));
                 break;
         }
     }

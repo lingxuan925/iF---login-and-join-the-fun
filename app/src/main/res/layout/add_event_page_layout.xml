@@ -1,4 +1,5 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollable_dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity = "center"
@@ -55,6 +56,7 @@
             android:id="@+id/new_act_add_capacity"
             android:layout_width="200dp"
             android:layout_height="40dp"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/textview_background_border"
             android:clickable="true"
             android:cursorVisible="false"
@@ -63,10 +65,26 @@
             android:text="Enter participants number"
             android:textSize="15sp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Choose a event type"
+            android:layout_marginBottom="5dp"/>
+
         <Spinner
             android:id="@+id/event_type"
             android:layout_width="200dp"
-            android:layout_height="40dp" />
+            android:layout_height="40dp"
+            android:textAlignment="center"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/textview_background_border"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-10dp"
+            android:hint="Pick a time" />
 
         <DatePicker
             android:id="@+id/new_act_date_picker"
