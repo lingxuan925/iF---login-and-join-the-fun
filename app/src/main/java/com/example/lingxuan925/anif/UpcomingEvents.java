@@ -62,6 +62,8 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
         listView.setOnItemClickListener(UpcomingEvents.this);
         listView.setAdapter(adapter);
         dbHelper.fetchUpcomingEvents(emptyBackground, mAuth, adapter, upcomingEvents);
+
+        dialog = setUpMarkerPopupView();
     }
 
     @Override

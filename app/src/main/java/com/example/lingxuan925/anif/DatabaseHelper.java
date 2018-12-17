@@ -194,9 +194,9 @@ public class DatabaseHelper {
                         databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
                         databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
                     } else {
-//                        event.getParticipants().remove(mAuth.getCurrentUser().getUid());
                         if (event.getParticipants().size() == 1) dataSnapshot.getRef().setValue(null);
                         else {
+                            event.getParticipants().remove(mAuth.getCurrentUser().getUid());
                             databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
                             databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
                         }
