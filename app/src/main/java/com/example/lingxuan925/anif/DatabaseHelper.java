@@ -255,9 +255,9 @@ public class DatabaseHelper {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    location.setText(dataSnapshot.getValue(Event.class).getLocation());
+                    location.setText("Location: "+dataSnapshot.getValue(Event.class).getLocation());
                     description.setText(dataSnapshot.getValue(Event.class).getDescription());
-                    eventType.setText(dataSnapshot.getValue(Event.class).getType());
+                    eventType.setText("Event Type: "+dataSnapshot.getValue(Event.class).getType());
                     evtTitle.setText(dataSnapshot.getValue(Event.class).getName());
                     participantRatio.setText(dataSnapshot.getValue(Event.class).getCurCnt()+"/"+dataSnapshot.getValue(Event.class).getNumLimit());
                     ArrayList<String> eventParticipants = dataSnapshot.getValue(Event.class).getParticipants();
