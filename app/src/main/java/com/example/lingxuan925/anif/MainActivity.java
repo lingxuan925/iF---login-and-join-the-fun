@@ -448,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         }
 
                         if (!hasErrors) {
-                            Event newEvent = new Event(name, location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude, eventType.getSelectedItem().toString());
+                            Event newEvent = new Event(name, mAuth.getCurrentUser().getDisplayName(), location, description, mAuth.getCurrentUser().getUid(), date, time, capacity, latlng.latitude, latlng.longitude, eventType.getSelectedItem().toString());
                             newEvent.getParticipants().add(mAuth.getCurrentUser().getUid());
                             newEvent.setCurCnt(newEvent.getParticipants().size());
                             dbHelper.createEvent(newEvent, mAuth);

@@ -52,6 +52,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         imageViewEventType = convertView.findViewById(R.id.event_type_image);
 
         textViewTitle.setText(eventList.get(position).getName());
+        textViewHost.setText(eventList.get(position).getHost());
         textViewMax.setText("Max: "+Integer.toString(eventList.get(position).getNumLimit()));
         textViewCurrent.setText("Current: "+Integer.toString(eventList.get(position).getParticipants().size()));
         textViewStartTime.setText(eventList.get(position).getStartTime());
@@ -75,22 +76,6 @@ public class EventsAdapter extends ArrayAdapter<Event> {
                 imageViewEventType.setImageResource(R.drawable.event_flag_food);
                 break;
         }
-
-        DatabaseHelper dbHelper = new DatabaseHelper();
-        dbHelper.getDatabaseUsers().child(eventList.get(position).getHostname()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    System.out.println(dataSnapshot.getValue(AppUser.class).getName());
-                    textViewHost.setText(dataSnapshot.getValue(AppUser.class).getName());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
         return convertView;
     }

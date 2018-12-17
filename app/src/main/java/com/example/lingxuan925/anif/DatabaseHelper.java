@@ -70,12 +70,11 @@ public class DatabaseHelper {
                 upcomingEvents.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Event anEvent = ds.getValue(Event.class);
-                    if (anEvent != null) if (anEvent.getParticipants().contains(mAuth.getCurrentUser().getUid())) upcomingEvents.add(anEvent);
+                    if (anEvent.getParticipants().contains(mAuth.getCurrentUser().getUid())) upcomingEvents.add(anEvent);
                 }
-                if (upcomingEvents.isEmpty())
-                    emptyBackground.setVisibility(View.VISIBLE);
-                else
-                    emptyBackground.setVisibility(View.INVISIBLE);
+                if (upcomingEvents.isEmpty()) emptyBackground.setVisibility(View.VISIBLE);
+                else emptyBackground.setVisibility(View.INVISIBLE);
+
                 adapter.refreshList(upcomingEvents);
             }
 

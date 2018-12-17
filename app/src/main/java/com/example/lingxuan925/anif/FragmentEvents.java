@@ -130,6 +130,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                     listView.setAdapter(adapter);
 
                     if (currentLatLng != null && !searching) refreshRadiusList();
+                    else refreshRadiusListAfterSearch(currentLatLng);
                     onMap = false;
                 } else {
                     layoutList.startAnimation(mHiddenAction);
@@ -137,7 +138,9 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                     btnMyLocation.show();
                     layoutMap.startAnimation(mShowAction);
                     layoutMap.setVisibility(View.VISIBLE);
+                    System.out.println(searching);
                     if (currentLatLng != null && !searching) refreshRadiusList();
+                    else refreshRadiusListAfterSearch(currentLatLng);
                     onMap = true;
                 }
             }
@@ -341,6 +344,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
 
     public void refreshRadiusListAfterSearch(final LatLng searchLatLng) {
         searching = true;
+        currentLatLng = searchLatLng;
         dbHelper.getDatabaseUsers().orderByChild("email").equalTo(mAuth.getCurrentUser().getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

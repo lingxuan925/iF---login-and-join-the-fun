@@ -56,14 +56,13 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
         });
 
         mAuth = FirebaseAuth.getInstance();
+        dialog = setUpMarkerPopupView();
 
         listView = findViewById(R.id.upcoming_events_list);
         adapter = new EventsAdapter(UpcomingEvents.this, 0, upcomingEvents);
         listView.setOnItemClickListener(UpcomingEvents.this);
         listView.setAdapter(adapter);
         dbHelper.fetchUpcomingEvents(emptyBackground, mAuth, adapter, upcomingEvents);
-
-        dialog = setUpMarkerPopupView();
     }
 
     @Override
