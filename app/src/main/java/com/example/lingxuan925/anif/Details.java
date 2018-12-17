@@ -16,8 +16,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -25,7 +23,7 @@ import java.util.ArrayList;
 public class Details extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     FirebaseAuth mAuth;
-    DatabaseReference databaseRef;
+    DatabaseHelper dbHelper;
     private ArrayList<Option> optionList = new ArrayList<>();
     private OptionAdapter adapter;
 
@@ -42,7 +40,7 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
-        databaseRef = FirebaseDatabase.getInstance().getReference("Users");
+        dbHelper = new DatabaseHelper();
         setContentView(R.layout.details);
 
         Toolbar mToolbar = findViewById(R.id.toolbar);
@@ -65,13 +63,14 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         FirebaseUser current_user = mAuth.getCurrentUser();
         final String cur_user_key = current_user.getUid();
 
-        databaseRef.addValueEventListener(new ValueEventListener() {
+        dbHelper.getDatabaseUsers().addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     if (ds.getKey().equals(cur_user_key)) {
-                        optionList.get(0).setName(ds.getValue(AppUser.class).getBirthDate());
+                        optionList.get(0).setName(ds.getValue(AppUser.class).getGender());
                         optionList.get(1).setName(ds.getValue(AppUser.class).getWhatsup());
+                        optionList.get(2).setName(ds.getValue(AppUser.class).getAge());
                         adapter.refreshList(optionList);
                     }
                 }
@@ -89,6 +88,8 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         optionList.add(option1);
         Option option2 = new Option("Message", R.drawable.ic_message_black_24dp);
         optionList.add(option2);
+        Option option3 = new Option("Age", R.drawable.ic_cake_black_24dp);
+        optionList.add(option3);
     }
 
     @Override
@@ -103,14 +104,18 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
                 Toast.makeText(this, text + " is clicked!", Toast.LENGTH_SHORT).show();
                 editWhatsup(i);
                 break;
+            case 2:
+                Toast.makeText(this, text + " is clicked!", Toast.LENGTH_SHORT).show();
+                editAge(i);
+                break;
         }
     }
 
-    public void editGender(final int pos) {
+    public void editAge(final int pos) {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
-        View mView = getLayoutInflater().inflate(R.layout.change_birthdate, null);
+        View mView = getLayoutInflater().inflate(R.layout.change_age, null);
 
-        final EditText birthdateField = mView.findViewById(R.id.change_birthdate);
+        final EditText ageField = mView.findViewById(R.id.change_age);
         Button mSave = mView.findViewById(R.id.btn_save);
         mBuilder.setView(mView);
 
@@ -120,10 +125,41 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         mSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String editBirthDate = birthdateField.getText().toString();
-                if (!editBirthDate.isEmpty()){
+                String editAge = ageField.getText().toString();
 
-                    update(editBirthDate, pos);
+                if (!editAge.isEmpty()){
+                    try {
+                        int radius = Integer.parseInt(editAge);
+                        update(editAge, pos);
+                        dialog.dismiss();
+                    } catch (NumberFormatException e) {
+                        ageField.setError("Age must be a number!");
+                    }
+                } else {
+                    ageField.setError("Age is required!");
+                }
+            }
+        });
+    }
+
+    public void editGender(final int pos) {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.change_gender, null);
+
+        final EditText genderField = mView.findViewById(R.id.change_gender);
+        Button mSave = mView.findViewById(R.id.btn_save);
+        mBuilder.setView(mView);
+
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+        mSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String editGender = genderField.getText().toString();
+                if (!editGender.isEmpty()){
+
+                    update(editGender, pos);
                     dialog.dismiss();
                 } else{
                     Toast.makeText(getApplicationContext(), "field is empty!", Toast.LENGTH_SHORT).show();
@@ -162,12 +198,17 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         try {
             switch (pos) {
                 case 0:
-                    databaseRef.child(mAuth.getCurrentUser().getUid()).child("birthDate").setValue(val);
+                    dbHelper.getDatabaseUsers().child(mAuth.getCurrentUser().getUid()).child("gender").setValue(val);
                     optionList.get(pos).setName(val);
                     adapter.refreshList(optionList);
                     break;
                 case 1:
-                    databaseRef.child(mAuth.getCurrentUser().getUid()).child("whatsup").setValue(val);
+                    dbHelper.getDatabaseUsers().child(mAuth.getCurrentUser().getUid()).child("whatsup").setValue(val);
+                    optionList.get(pos).setName(val);
+                    adapter.refreshList(optionList);
+                    break;
+                case 2:
+                    dbHelper.getDatabaseUsers().child(mAuth.getCurrentUser().getUid()).child("age").setValue(val);
                     optionList.get(pos).setName(val);
                     adapter.refreshList(optionList);
                     break;
