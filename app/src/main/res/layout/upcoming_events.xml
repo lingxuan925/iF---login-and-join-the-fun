@@ -39,11 +39,35 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <LinearLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="58dp"
-        android:orientation="vertical" >
+        android:layout_marginTop="58dp">
+
+        <LinearLayout
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="300dp"
+                android:layout_height="300dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="50dp"
+                android:src="@drawable/image_nothing" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:text="Nothing at all!"
+                android:textColor="#8d9d7e"
+                android:textSize="25sp" />
+
+        </LinearLayout>
 
         <ListView
             android:id="@+id/upcoming_events_list"
@@ -55,6 +79,6 @@
             android:paddingTop="5dp"
             android:scrollbars="none" />
 
-    </LinearLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
 </android.support.design.widget.CoordinatorLayout>

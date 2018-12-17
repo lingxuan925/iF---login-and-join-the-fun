@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -57,7 +58,7 @@ public class DatabaseHelper {
      * @param adapter - event adapter
      * @param upcomingEvents - arraylist of events
      */
-    public void fetchUpcomingEvents(final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> upcomingEvents) {
+    public void fetchUpcomingEvents(LinearLayout emptyBackground, final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> upcomingEvents) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1);
         Date tomorrow = calendar.getTime();
@@ -71,6 +72,10 @@ public class DatabaseHelper {
                     Event anEvent = ds.getValue(Event.class);
                     if (anEvent != null) if (anEvent.getParticipants().contains(mAuth.getCurrentUser().getUid())) upcomingEvents.add(anEvent);
                 }
+                if (upcomingEvents.isEmpty())
+                    emptyBackground.setVisibility(View.VISIBLE);
+                else
+                    emptyBackground.setVisibility(View.INVISIBLE);
                 adapter.refreshList(upcomingEvents);
             }
 
@@ -93,7 +98,7 @@ public class DatabaseHelper {
      * @param adapter
      * @param radiusEvents - arraylist of events
      */
-    public void fetchEventsWithinRadius(final GoogleMap googleMap, final LatLng currentLatLng, final String radius, final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> radiusEvents) {
+    public void fetchEventsWithinRadius(LinearLayout emptyBackground, final GoogleMap googleMap, final LatLng currentLatLng, final String radius, final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> radiusEvents) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1);
         Date tomorrow = calendar.getTime();
@@ -136,6 +141,11 @@ public class DatabaseHelper {
                         radiusEvents.add(anEvent);
                     }
                 }
+                if (radiusEvents.isEmpty())
+                    emptyBackground.setVisibility(View.VISIBLE);
+                else
+                    emptyBackground.setVisibility(View.INVISIBLE);
+
                 if (currentLatLng != null) googleMap.addMarker(new MarkerOptions().title("Current Location")
                         .position(currentLatLng)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_search)));
@@ -294,7 +304,7 @@ public class DatabaseHelper {
         });
     }
 
-    public void fetchEventsByType(final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> eventsByType, String type, String radius) {
+    public void fetchEventsByType(final LinearLayout emptyBackground, final FirebaseAuth mAuth, final EventsAdapter adapter, final ArrayList<Event> eventsByType, String type, String radius) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DAY_OF_YEAR, 1);
         Date tomorrow = calendar.getTime();
@@ -314,6 +324,10 @@ public class DatabaseHelper {
                     eventLoc.setLongitude(anEvent.getLongitude());
                     if (anEvent.getType().equals(type) && currentLoc.distanceTo(eventLoc)/1000 < Integer.parseInt(radius)) eventsByType.add(anEvent);
                 }
+                if (eventsByType.isEmpty())
+                    emptyBackground.setVisibility(View.VISIBLE);
+                else
+                    emptyBackground.setVisibility(View.INVISIBLE);
                 adapter.refreshList(eventsByType);
             }
 

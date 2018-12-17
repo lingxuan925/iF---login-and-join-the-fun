@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +25,7 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
     AlertDialog dialog;
     View viewJoin;
     private String clickedEventKey;
+    private LinearLayout emptyBackground;
 
     public UpcomingEvents() {
 
@@ -38,6 +40,7 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.upcoming_events);
+        emptyBackground = findViewById(R.id.empty_view);
         dbHelper = new DatabaseHelper();
         upcomingEvents = new ArrayList<>();
         viewJoin = View.inflate(this, R.layout.marker_popup_layout, null);
@@ -58,9 +61,7 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
         adapter = new EventsAdapter(UpcomingEvents.this, 0, upcomingEvents);
         listView.setOnItemClickListener(UpcomingEvents.this);
         listView.setAdapter(adapter);
-        dbHelper.fetchUpcomingEvents(mAuth, adapter, upcomingEvents);
-
-        dialog = setUpMarkerPopupView();
+        dbHelper.fetchUpcomingEvents(emptyBackground, mAuth, adapter, upcomingEvents);
     }
 
     @Override

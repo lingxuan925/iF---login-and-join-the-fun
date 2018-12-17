@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -71,6 +72,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
     private LocationCallback mLocationCallback;
     private String clickedEventKey;
     View viewJoin;
+    LinearLayout emptyBackground;
 
     public FragmentEvents() {
         // Required empty public constructor
@@ -84,7 +86,8 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
 
         final View view = inflater.inflate(R.layout.fragment_events, container, false);
         final LinearLayout layoutMap = view.findViewById(R.id.map);
-        final LinearLayout layoutList = view.findViewById(R.id.event_list);
+        final CoordinatorLayout layoutList = view.findViewById(R.id.event_list);
+        emptyBackground = layoutList.findViewById(R.id.empty_view);
         layoutList.setVisibility(View.GONE);
         radiusList = new ArrayList<>();
         mAuth = FirebaseAuth.getInstance();
@@ -325,7 +328,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    dbHelper.fetchEventsWithinRadius(googleMap, currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
+                    dbHelper.fetchEventsWithinRadius(emptyBackground, googleMap, currentLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
                 }
             }
 
@@ -342,7 +345,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    dbHelper.fetchEventsWithinRadius(googleMap, searchLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
+                    dbHelper.fetchEventsWithinRadius(emptyBackground, googleMap, searchLatLng, dataSnapshot.child(mAuth.getCurrentUser().getUid()).getValue(AppUser.class).getRadius(), mAuth, adapter, radiusList);
                 }
             }
 

@@ -1,11 +1,13 @@
 package com.example.lingxuan925.anif;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -127,7 +129,7 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
             public void onClick(View view) {
                 String editAge = ageField.getText().toString();
 
-                if (!editAge.isEmpty()){
+                if (!editAge.isEmpty()) {
                     try {
                         int radius = Integer.parseInt(editAge);
                         update(editAge, pos);
@@ -143,29 +145,29 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
     }
 
     public void editGender(final int pos) {
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
-        View mView = getLayoutInflater().inflate(R.layout.change_gender, null);
 
-        final EditText genderField = mView.findViewById(R.id.change_gender);
-        Button mSave = mView.findViewById(R.id.btn_save);
-        mBuilder.setView(mView);
-
-        final AlertDialog dialog = mBuilder.create();
-        dialog.show();
-
-        mSave.setOnClickListener(new View.OnClickListener() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                new String[]{"unknown", "male", "female"});
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
+        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                final String editGender = genderField.getText().toString();
-                if (!editGender.isEmpty()){
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        update("unknown", pos);
 
-                    update(editGender, pos);
-                    dialog.dismiss();
-                } else{
-                    Toast.makeText(getApplicationContext(), "field is empty!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        update("male", pos);
+                        break;
+                    case 2:
+                        update("female", pos);
+                        break;
                 }
             }
         });
+        builder.create().show();
     }
 
     public void editWhatsup(final int pos) {
@@ -183,11 +185,11 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
             @Override
             public void onClick(View view) {
                 final String editWhatsup = ageField.getText().toString();
-                if (!editWhatsup.isEmpty()){
+                if (!editWhatsup.isEmpty()) {
 
                     update(editWhatsup, pos);
                     dialog.dismiss();
-                } else{
+                } else {
                     Toast.makeText(getApplicationContext(), "field is empty!", Toast.LENGTH_SHORT).show();
                 }
             }

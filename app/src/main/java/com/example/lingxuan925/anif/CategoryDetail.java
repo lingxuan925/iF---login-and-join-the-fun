@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,6 +30,7 @@ public class CategoryDetail extends AppCompatActivity implements AdapterView.OnI
     AlertDialog dialog;
     View viewJoin;
     private String clickedEventKey;
+    private LinearLayout emptyBackground;
 
     public CategoryDetail() {
         // Required empty public constructor
@@ -69,6 +71,7 @@ public class CategoryDetail extends AppCompatActivity implements AdapterView.OnI
                 break;
         }
 
+        emptyBackground = findViewById(R.id.empty_view);
         listView = findViewById(R.id.detail_list);
         adapter = new EventsAdapter(CategoryDetail.this, 0, eventsByType);
         listView.setOnItemClickListener(CategoryDetail.this);
@@ -77,7 +80,7 @@ public class CategoryDetail extends AppCompatActivity implements AdapterView.OnI
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    dbHelper.fetchEventsByType(mAuth, adapter, eventsByType, title.getText().toString(), dataSnapshot.getValue(AppUser.class).getRadius());
+                    dbHelper.fetchEventsByType(emptyBackground, mAuth, adapter, eventsByType, title.getText().toString(), dataSnapshot.getValue(AppUser.class).getRadius());
                 }
             }
 
