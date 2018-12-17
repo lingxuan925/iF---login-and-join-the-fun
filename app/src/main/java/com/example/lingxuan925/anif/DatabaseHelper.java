@@ -268,7 +268,11 @@ public class DatabaseHelper {
                             dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                         } else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                     }
-                    else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("join");
+                    else {
+                        dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setText("join");
+                        if (eventParticipants.size() == dataSnapshot.getValue(Event.class).getNumLimit()) dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                        else dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    }
 
                     databaseUsers.child(dataSnapshot.getValue(Event.class).getHostname()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
