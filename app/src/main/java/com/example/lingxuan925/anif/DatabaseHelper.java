@@ -69,7 +69,7 @@ public class DatabaseHelper {
                 upcomingEvents.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Event anEvent = ds.getValue(Event.class);
-                    if (anEvent.getParticipants().contains(mAuth.getCurrentUser().getUid())) upcomingEvents.add(anEvent);
+                    if (anEvent != null) if (anEvent.getParticipants().contains(mAuth.getCurrentUser().getUid())) upcomingEvents.add(anEvent);
                 }
                 adapter.refreshList(upcomingEvents);
             }
@@ -181,12 +181,16 @@ public class DatabaseHelper {
                     Event event = dataSnapshot.getValue(Event.class);
                     if (!event.getParticipants().contains(mAuth.getCurrentUser().getUid())) {
                         event.getParticipants().add(mAuth.getCurrentUser().getUid());
+                        databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
+                        databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
                     } else {
-                        event.getParticipants().remove(mAuth.getCurrentUser().getUid());
+//                        event.getParticipants().remove(mAuth.getCurrentUser().getUid());
+                        if (event.getParticipants().size() == 1) dataSnapshot.getRef().setValue(null);
+                        else {
+                            databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
+                            databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
+                        }
                     }
-                    databaseEvents.child(evtKey).child("participants").setValue(event.getParticipants());
-                    databaseEvents.child(evtKey).child("curCnt").setValue(event.getParticipants().size());
-                    if (event.getParticipants().isEmpty()) dataSnapshot.getRef().setValue(null);
                     /**
                      * deletes event object from database only if the number of participants for that events is zero
                      * and it is the host who is the last one that unjoined
