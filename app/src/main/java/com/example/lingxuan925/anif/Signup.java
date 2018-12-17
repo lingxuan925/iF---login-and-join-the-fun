@@ -105,7 +105,7 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             final FirebaseUser curUser = mAuth.getCurrentUser();
-                            AppUser aUser = new AppUser(mAuth.getCurrentUser().getDisplayName(), "male", mAuth.getCurrentUser().getEmail(), "yyyy-mm-dd", "What's up", "50", "image uri");
+                            AppUser aUser = new AppUser(mAuth.getCurrentUser().getDisplayName(), "1", "unknown", mAuth.getCurrentUser().getEmail(), "What's up", "50", "image uri");
                             dbHelper.createUser(aUser, mAuth);
                             startActivity(new Intent(Signup.this, MainActivity.class));
                         } else {

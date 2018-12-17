@@ -246,7 +246,9 @@ public class DatabaseHelper {
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.context.startActivity(new Intent(MainActivity.context, OtherUserPage.class));
+                Intent intent = new Intent(MainActivity.context, OtherUserPage.class);
+                intent.putExtra("eventkey", evtKey);
+                MainActivity.context.startActivity(intent);
             }
         });
         databaseEvents.child(evtKey).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -318,5 +320,9 @@ public class DatabaseHelper {
 
             }
         });
+    }
+
+    public DatabaseReference getDatabaseEvents() {
+        return databaseEvents;
     }
 }

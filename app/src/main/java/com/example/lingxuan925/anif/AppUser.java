@@ -6,22 +6,13 @@ public class AppUser {
 
     private String name;
     private String email;
-    private String birthDate;
     private String whatsup;
     private String radius;
     private String imageUri;
     private String gender;
+    private String age;
 
     ArrayList<String> eventIDs;
-
-
-    public String getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(String birthDate) {
-        this.birthDate = birthDate;
-    }
 
     public String getWhatsup() {
         return whatsup;
@@ -35,14 +26,14 @@ public class AppUser {
 
     }
 
-    public AppUser(String name, String gender, String email, String birthDate, String whatsup, String radius, String imageUri) {
+    public AppUser(String name, String age, String gender, String email, String whatsup, String radius, String imageUri) {
         this.name = name;
         this.email = email;
         this.gender = gender;
-        this.birthDate = birthDate;
         this.whatsup = whatsup;
         this.radius = radius;
         this.imageUri = imageUri;
+        this.age = age;
         eventIDs = new ArrayList<>();
     }
 
@@ -92,5 +83,13 @@ public class AppUser {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
     }
 }
