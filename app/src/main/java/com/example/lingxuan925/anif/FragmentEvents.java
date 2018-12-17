@@ -283,19 +283,9 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                 .title(title));
     }
 
-    public void addMarker(String title, LatLng latLng, BitmapDescriptor icon) {
-        if (marker != null)
-            marker.remove();
-        marker = googleMap.addMarker(new MarkerOptions()
-                .icon(icon)
-                .position(latLng)
-                .title(title));
-    }
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         clickedEventKey = radiusList.get(position).getId();
-        dialog.setTitle(radiusList.get(position).getName());
         dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
         dialog.show();
     }

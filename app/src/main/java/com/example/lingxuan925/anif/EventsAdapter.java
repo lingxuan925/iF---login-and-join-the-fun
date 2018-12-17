@@ -6,10 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import android.support.v7.widget.CardView;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -21,6 +23,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
     CardView cardView;
     TextView textViewTitle, textViewLocation, textViewStartTime, textViewMonth, textViewDay, textViewHost, textViewDesc, textViewCurrent, textViewMax, textViewType;
     private ArrayList<Event> eventList;
+    ImageView imageViewEventType;
 
     public EventsAdapter(Context context, int resource, ArrayList<Event> events) {
         super(context, resource, events);
@@ -45,16 +48,33 @@ public class EventsAdapter extends ArrayAdapter<Event> {
         textViewCurrent = convertView.findViewById(R.id.tViewCurrent);
         textViewMax = convertView.findViewById(R.id.tViewMaxCapacity);
         textViewType = convertView.findViewById(R.id.tEventType);
+        imageViewEventType = convertView.findViewById(R.id.event_type_image);
 
         textViewTitle.setText(eventList.get(position).getName());
-        textViewMax.setText(Integer.toString(eventList.get(position).getNumLimit()));
-        textViewCurrent.setText(Integer.toString(eventList.get(position).getParticipants().size()));
+        textViewMax.setText("Max: "+Integer.toString(eventList.get(position).getNumLimit()));
+        textViewCurrent.setText("Current: "+Integer.toString(eventList.get(position).getParticipants().size()));
         textViewStartTime.setText(eventList.get(position).getStartTime());
         textViewMonth.setText(eventList.get(position).getDate().split("-")[1]);
         textViewDay.setText(eventList.get(position).getDate().split("-")[2]);
         textViewLocation.setText(eventList.get(position).getLocation());
         textViewDesc.setText(eventList.get(position).getDescription());
         textViewType.setText(eventList.get(position).getType());
+
+        switch (eventList.get(position).getType()) {
+            case "Entertainment":
+                imageViewEventType.setImageResource(R.drawable.event_flag_entertainment);
+                break;
+            case "Sports":
+                imageViewEventType.setImageResource(R.drawable.event_flag_sport);
+                break;
+            case "Travel":
+                imageViewEventType.setImageResource(R.drawable.event_flag_travel);
+                break;
+            case "Foodies":
+                imageViewEventType.setImageResource(R.drawable.event_flag_food);
+                break;
+        }
+
         DatabaseHelper dbHelper = new DatabaseHelper();
         dbHelper.getDatabaseUsers().child(eventList.get(position).getHostname()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

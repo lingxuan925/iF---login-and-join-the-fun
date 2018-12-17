@@ -14,6 +14,13 @@
         android:layout_marginRight="8dp"
         android:orientation="vertical">
 
+        <ImageView
+            android:id="@+id/event_type_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp" />
+
         <TextView
             android:id="@+id/textViewMonth"
             android:layout_width="match_parent"
