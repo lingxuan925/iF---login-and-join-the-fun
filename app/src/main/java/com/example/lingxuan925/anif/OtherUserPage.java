@@ -90,7 +90,18 @@ public class OtherUserPage extends AppCompatActivity {
                                 }
                                 Glide.with(getApplicationContext()).load(dataSnapshot.getValue(AppUser.class).getImageUri()).apply(new RequestOptions().fitCenter()).into(avatar);
                                 whatsup.setText(dataSnapshot.getValue(AppUser.class).getWhatsup());
-                                age.setText(dataSnapshot.getValue(AppUser.class).getAge());
+                                age.setText("Age: "+dataSnapshot.getValue(AppUser.class).getAge());
+
+                                sendEmail.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent data = new Intent(Intent.ACTION_SENDTO);
+
+                                        //TODO: change the destination below to the email address of the user
+                                        data.setData(Uri.parse("mailto:"+dataSnapshot.getValue(AppUser.class).getEmail()));
+                                        startActivity(data);
+                                    }
+                                });
                             }
                         }
 
@@ -105,17 +116,6 @@ public class OtherUserPage extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-
-        sendEmail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent data = new Intent(Intent.ACTION_SENDTO);
-
-                //TODO: change the destination below to the email address of the user
-                data.setData(Uri.parse("mailto:Destination"));
-                startActivity(data);
             }
         });
     }
