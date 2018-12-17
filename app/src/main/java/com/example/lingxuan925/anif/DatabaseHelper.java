@@ -1,6 +1,7 @@
 package com.example.lingxuan925.anif;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
@@ -237,6 +238,13 @@ public class DatabaseHelper {
         final TextView location = view.findViewById(R.id.address_text);
         final TextView description = view.findViewById(R.id.description);
         final TextView eventType = view.findViewById(R.id.event_type);
+
+        profileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.context.startActivity(new Intent(MainActivity.context, OtherUserPage.class));
+            }
+        });
         databaseEvents.child(evtKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

@@ -1,5 +1,6 @@
 package com.example.lingxuan925.anif;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Calendar calendar;
     private boolean isTheFirstTime = true;
     private ArrayAdapter<String> dataAdapter;
+    static Context context;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -90,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = this.getApplicationContext();
         mAuth = FirebaseAuth.getInstance();
         dbHelper = new DatabaseHelper();
 

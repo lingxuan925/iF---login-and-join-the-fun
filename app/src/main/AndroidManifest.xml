@@ -38,6 +38,7 @@
         <activity
             android:name=".Signup"
             android:label="@string/title_activity_gmail_signup"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.signIn" />
         <activity
             android:name=".Details"
@@ -55,8 +56,16 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".CategoryDetail" />
-        <activity android:name=".Feedback" />
+
+        <activity android:name=".CategoryDetail"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".Feedback"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".OtherUserPage"
+            android:screenOrientation="portrait"/>
+
 
     </application>
 

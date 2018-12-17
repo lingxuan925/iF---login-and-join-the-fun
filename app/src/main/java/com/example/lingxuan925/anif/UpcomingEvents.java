@@ -66,7 +66,7 @@ public class UpcomingEvents extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         clickedEventKey = upcomingEvents.get(position).getId();
-        dialog.setTitle(upcomingEvents.get(position).getName());
+//        dialog.setTitle(upcomingEvents.get(position).getName());
         dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
         dialog.show();
     }

@@ -99,7 +99,7 @@ public class CategoryDetail extends AppCompatActivity implements AdapterView.OnI
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         clickedEventKey = eventsByType.get(position).getId();
-        dialog.setTitle(eventsByType.get(position).getName());
+//        dialog.setTitle(eventsByType.get(position).getName());
         dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
         dialog.show();
     }
