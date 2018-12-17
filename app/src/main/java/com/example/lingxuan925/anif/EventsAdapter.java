@@ -64,16 +64,16 @@ public class EventsAdapter extends ArrayAdapter<Event> {
 
         switch (eventList.get(position).getType()) {
             case "Entertainment":
-                imageViewEventType.setImageResource(R.drawable.event_flag_entertainment);
+                imageViewEventType.setImageResource(R.drawable.icon_large_entertainment);
                 break;
             case "Sports":
-                imageViewEventType.setImageResource(R.drawable.event_flag_sport);
+                imageViewEventType.setImageResource(R.drawable.icon_large_sports);
                 break;
             case "Travel":
-                imageViewEventType.setImageResource(R.drawable.event_flag_travel);
+                imageViewEventType.setImageResource(R.drawable.icon_large_travel);
                 break;
             case "Foodies":
-                imageViewEventType.setImageResource(R.drawable.event_flag_food);
+                imageViewEventType.setImageResource(R.drawable.icon_large_foodies);
                 break;
         }
 
