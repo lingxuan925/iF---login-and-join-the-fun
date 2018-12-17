@@ -81,6 +81,7 @@ public class EventsAdapter extends ArrayAdapter<Event> {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    System.out.println(dataSnapshot.getValue(AppUser.class).getName());
                     textViewHost.setText(dataSnapshot.getValue(AppUser.class).getName());
                 }
             }

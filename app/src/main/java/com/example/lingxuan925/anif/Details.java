@@ -86,7 +86,7 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
     }
 
     private void initOptions() {
-        Option option1 = new Option("Gender", R.drawable.ic_cake_black_24dp);
+        Option option1 = new Option("Gender", R.drawable.ic_assignment_ind_black_24dp);
         optionList.add(option1);
         Option option2 = new Option("Message", R.drawable.ic_message_black_24dp);
         optionList.add(option2);
@@ -99,15 +99,12 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         String text = (String) ((TextView) view.findViewById(R.id.option_name)).getText();
         switch (i) {
             case 0:
-                Toast.makeText(this, text + " is clicked!", Toast.LENGTH_SHORT).show();
                 editGender(i);
                 break;
             case 1:
-                Toast.makeText(this, text + " is clicked!", Toast.LENGTH_SHORT).show();
                 editWhatsup(i);
                 break;
             case 2:
-                Toast.makeText(this, text + " is clicked!", Toast.LENGTH_SHORT).show();
                 editAge(i);
                 break;
         }

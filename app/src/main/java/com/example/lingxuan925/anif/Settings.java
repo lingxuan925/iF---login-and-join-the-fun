@@ -90,7 +90,6 @@ public class Settings extends AppCompatActivity implements AdapterView.OnItemCli
         String text = (String) ((TextView) view.findViewById(R.id.option_name)).getText();
         switch (position) {
             case 0:
-                Toast.makeText(this, text + " is clicked!", Toast.LENGTH_SHORT).show();
                 editRadius(position);
                 break;
         }
