@@ -10,6 +10,7 @@ public class AppUser {
     private String whatsup;
     private String radius;
     private String imageUri;
+    private String gender;
 
     ArrayList<String> eventIDs;
 
@@ -34,9 +35,10 @@ public class AppUser {
 
     }
 
-    public AppUser(String name, String email, String birthDate, String whatsup, String radius, String imageUri) {
+    public AppUser(String name, String gender, String email, String birthDate, String whatsup, String radius, String imageUri) {
         this.name = name;
         this.email = email;
+        this.gender = gender;
         this.birthDate = birthDate;
         this.whatsup = whatsup;
         this.radius = radius;
@@ -82,5 +84,13 @@ public class AppUser {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

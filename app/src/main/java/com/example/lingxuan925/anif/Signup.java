@@ -34,12 +34,17 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
     private static final int REQ_CODE = 9001;
     FirebaseAuth.AuthStateListener mAuthListener;
     DatabaseHelper dbHelper;
+    private Boolean authFlag = true;
 
     @Override
     protected void onStart() {
         super.onStart();
+    }
 
-        mAuth.addAuthStateListener(mAuthListener);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAuthListener != null) mAuth.removeAuthStateListener(mAuthListener);
     }
 
     @Override
@@ -50,20 +55,6 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
         setSupportActionBar(toolbar);
         dbHelper = new DatabaseHelper();
 
-        signIn = findViewById(R.id.signingmail);
-        signIn.setOnClickListener(this);
-
-        mAuth = FirebaseAuth.getInstance();
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() != null) {
-                    startActivity(new Intent(Signup.this, MainActivity.class));
-                }
-            }
-        };
-
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -73,6 +64,11 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
+        signIn = findViewById(R.id.signingmail);
+        signIn.setOnClickListener(this);
+
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -109,8 +105,9 @@ public class Signup extends AppCompatActivity implements View.OnClickListener, G
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             final FirebaseUser curUser = mAuth.getCurrentUser();
-                            AppUser aUser = new AppUser(mAuth.getCurrentUser().getDisplayName(), mAuth.getCurrentUser().getEmail(), "yyyy-mm-dd", "What's up", "50", "image uri");
+                            AppUser aUser = new AppUser(mAuth.getCurrentUser().getDisplayName(), "male", mAuth.getCurrentUser().getEmail(), "yyyy-mm-dd", "What's up", "50", "image uri");
                             dbHelper.createUser(aUser, mAuth);
+                            startActivity(new Intent(Signup.this, MainActivity.class));
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());

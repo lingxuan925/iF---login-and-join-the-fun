@@ -54,6 +54,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
     Dialog myDialog;
     DatabaseHelper dbHelper;
     GoogleApiClient googleApiClient;
+    private Boolean authFlag = false;
 
     public FragmentUser() {
         // Required empty public constructor
@@ -62,13 +63,12 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         myDialog = new Dialog(getContext());
         initOptions();
@@ -79,6 +79,8 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_user, container, false);
+
+        mAuth = FirebaseAuth.getInstance();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -94,47 +96,39 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         ListView listView = view.findViewById(R.id.options_list);
         listView.setOnItemClickListener(this);
         listView.setAdapter(adapter);
-        mAuth = FirebaseAuth.getInstance();
         FirebaseUser current_user = mAuth.getCurrentUser();
         dbHelper = new DatabaseHelper();
         storageReference = FirebaseStorage.getInstance().getReference();
         logoutBtn = view.findViewById(R.id.signout);
         logoutBtn.setOnClickListener(this);
 
-        final String cur_user_key = current_user.getUid();
-
         name = view.findViewById(R.id.user_name);
         whatsup = view.findViewById(R.id.whats_up);
         user_email = view.findViewById(R.id.user_id);
-        user_email.setText(current_user.getEmail());
         profile_pic = view.findViewById(R.id.avatar);
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if (firebaseAuth.getCurrentUser() == null) {
-                    startActivity(new Intent(getActivity(), SignInPage.class));
-                }
-            }
-        };
-
-        dbHelper.getDatabaseUsers().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    if (ds.getKey().equals(cur_user_key)) {
-                        name.setText(ds.getValue(AppUser.class).getName());
-                        whatsup.setText(ds.getValue(AppUser.class).getWhatsup());
-                        Glide.with(getContext()).load(ds.getValue(AppUser.class).getImageUri()).apply(new RequestOptions().fitCenter()).into(profile_pic);
+        if (current_user != null) {
+            user_email.setText(current_user.getEmail());
+            String cur_user_key = current_user.getUid();
+            dbHelper.getDatabaseUsers().addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        if (ds.getKey().equals(cur_user_key)) {
+                            name.setText(ds.getValue(AppUser.class).getName());
+                            whatsup.setText(ds.getValue(AppUser.class).getWhatsup());
+                            Glide.with(getContext()).load(ds.getValue(AppUser.class).getImageUri()).apply(new RequestOptions().fitCenter()).into(profile_pic);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
+
         return view;
     }
 
@@ -158,6 +152,7 @@ public class FragmentUser extends Fragment implements View.OnClickListener, Adap
         if (view.getId() == R.id.signout) {
             Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback(status -> {
                 mAuth.signOut();
+                startActivity(new Intent(getActivity(), SignInPage.class));
             });
         }
     }

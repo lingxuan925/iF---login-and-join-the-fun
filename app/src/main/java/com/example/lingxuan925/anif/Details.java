@@ -85,7 +85,7 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
     }
 
     private void initOptions() {
-        Option option1 = new Option("Birth Date", R.drawable.ic_cake_black_24dp);
+        Option option1 = new Option("Gender", R.drawable.ic_cake_black_24dp);
         optionList.add(option1);
         Option option2 = new Option("Message", R.drawable.ic_message_black_24dp);
         optionList.add(option2);
@@ -97,7 +97,7 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         switch (i) {
             case 0:
                 Toast.makeText(this, text + " is clicked!", Toast.LENGTH_SHORT).show();
-                editBirthDate(i);
+                editGender(i);
                 break;
             case 1:
                 Toast.makeText(this, text + " is clicked!", Toast.LENGTH_SHORT).show();
@@ -106,7 +106,7 @@ public class Details extends AppCompatActivity implements AdapterView.OnItemClic
         }
     }
 
-    public void editBirthDate(final int pos) {
+    public void editGender(final int pos) {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
         View mView = getLayoutInflater().inflate(R.layout.change_birthdate, null);
 

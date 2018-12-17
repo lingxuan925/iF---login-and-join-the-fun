@@ -23,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -238,6 +240,8 @@ public class DatabaseHelper {
         final TextView location = view.findViewById(R.id.address_text);
         final TextView description = view.findViewById(R.id.description);
         final TextView eventType = view.findViewById(R.id.event_type);
+        final TextView evtTitle = view.findViewById(R.id.eventInfo_title);
+        final TextView participantRatio = view.findViewById(R.id.eventInfo_participants);
 
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -252,6 +256,8 @@ public class DatabaseHelper {
                     location.setText(dataSnapshot.getValue(Event.class).getLocation());
                     description.setText(dataSnapshot.getValue(Event.class).getDescription());
                     eventType.setText(dataSnapshot.getValue(Event.class).getType());
+                    evtTitle.setText(dataSnapshot.getValue(Event.class).getName());
+                    participantRatio.setText(dataSnapshot.getValue(Event.class).getCurCnt()+"/"+dataSnapshot.getValue(Event.class).getNumLimit());
                     ArrayList<String> eventParticipants = dataSnapshot.getValue(Event.class).getParticipants();
 
                     if (eventParticipants.contains(mAuth.getCurrentUser().getUid())) {

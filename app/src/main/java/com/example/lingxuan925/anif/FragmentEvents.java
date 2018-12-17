@@ -169,7 +169,6 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                     public boolean onMarkerClick(Marker marker) {
                         if (marker.getTitle().equals("Current Location")) marker.showInfoWindow();
                         else {
-                            dialog.setTitle(marker.getTitle());
                             clickedEventKey = marker.getSnippet();
                             dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
                             dialog.show();
@@ -258,7 +257,7 @@ public class FragmentEvents extends Fragment implements AdapterView.OnItemClickL
                             if (marker.getTitle().equals("Current Location"))
                                 marker.showInfoWindow();
                             else {
-                                dialog.setTitle(marker.getTitle());
+                                clickedEventKey = marker.getSnippet();
                                 dbHelper.fetchSingleEventByID(clickedEventKey, viewJoin, mAuth, dialog);
                                 dialog.show();
                             }
