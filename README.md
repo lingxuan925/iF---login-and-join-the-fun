@@ -9,6 +9,7 @@ implementation 'com.github.yalantis:ucrop:2.2.2'
 implementation 'com.fxn769:pix:1.2.5'
 ```
 The instruction of these libraries can be found here:
+
 https://github.com/hdodenhof/CircleImageView
 
 https://github.com/Yalantis/uCrop
