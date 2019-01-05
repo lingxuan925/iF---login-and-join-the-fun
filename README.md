@@ -39,4 +39,29 @@ We used google Api client and firebase to support some functions in our app.
 
 ## Graphic examaple
 
+![](20190104_174023.gif)
+Go to current location and switch of map view and list view
+
+![](20190104_174143.gif) 
+![](20190104_174325.gif)
+Add a new event and it will be shown on map, if you forget to fill some of the fields, it will remind you.
+
+![](20190104_174500.gif)
+The UI design of popup event info page, when you click on the avatar, you can see the creator's info, you can also send a email directly to the creator
+
+![](20190104_184136.gif)
+![](20190104_184257.gif)
+I have unjoined the last event, let create a new one and let me show you the login logout page.
+
+## Last statement
+
+/* This project was originally our final project of Android development course.
+
+   I used some random pictures from internet, but most of them are from Alibaba vector image library:
+
+   https://www.iconfont.cn/
+   
+   If there is any violation of your right, just let me know, we will remove them as soon as possible.
+   
+   My email address: zhatiayua59@gmail.com
 
