@@ -1,10 +1,10 @@
 # iF — login and join the fun
 
-Welcome to our open source Android app! "iF" is a convenient event management app, although is still a prototype, it's main functionality is implemented. 
+Welcome to our open source Android app! "iF" is a convenient event management app, although it is still a prototype, it's main functionality is implemented. 
 
-"iF" helps event creator manage their events as well as check event participants information online. For the participants, they can search nearby events, search events in a particular area or search by both category and area (You can be both event creator and participant). All participants can only login through their Google account so far, when loign completed, users can change their nick name, gender, avatar and more public and private info.
+"iF" helps event creator manage their events as well as check event participant's information online. For users, they can search nearby events, search events in a particular area or search by both category and area (You can be both event creator and participant). Users can only login through their Google account so far. When logged in, users can change their nickname, gender, avatar and public and private info.
 
-For convenience, we used some open source libraries, they look like this in graddle:
+For convenience, we used some open source libraries:
 ```
 implementation 'de.hdodenhof:circleimageview:2.2.0'
 implementation 'com.github.yalantis:ucrop:2.2.2'
@@ -18,7 +18,7 @@ https://github.com/Yalantis/uCrop
 
 https://github.com/akshay2211/PixImagePicker
 
-We used google Api client and firebase to support some functions in our app.
+We used google Api client and Firebase to support some functions in our app.
 
 ## Features
 - Google login logout
